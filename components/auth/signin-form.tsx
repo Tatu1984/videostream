@@ -18,9 +18,9 @@ const signinSchema = z.object({
 type SigninFormData = z.infer<typeof signinSchema>
 
 const demoAccounts = [
-  { role: "Super Admin", email: "admin@metube.com", password: "admin123", color: "bg-red-100 text-red-800 border-red-200" },
-  { role: "Creator", email: "creator@metube.com", password: "creator123", color: "bg-blue-100 text-blue-800 border-blue-200" },
-  { role: "User", email: "user@metube.com", password: "user123", color: "bg-green-100 text-green-800 border-green-200" },
+  { role: "Super Admin", email: "admin@metube.com", password: "admin123", color: "bg-red-100 text-red-800 border-red-200", redirect: "/admin" },
+  { role: "Creator", email: "creator@metube.com", password: "creator123", color: "bg-blue-100 text-blue-800 border-blue-200", redirect: "/studio" },
+  { role: "User", email: "user@metube.com", password: "user123", color: "bg-green-100 text-green-800 border-green-200", redirect: "/" },
 ]
 
 export function SigninForm() {
@@ -37,9 +37,12 @@ export function SigninForm() {
     resolver: zodResolver(signinSchema),
   })
 
-  const fillDemoCredentials = (email: string, password: string) => {
+  const [selectedRedirect, setSelectedRedirect] = useState("/")
+
+  const fillDemoCredentials = (email: string, password: string, redirect: string) => {
     setValue("email", email)
     setValue("password", password)
+    setSelectedRedirect(redirect)
   }
 
   const onSubmit = async (data: SigninFormData) => {
@@ -56,7 +59,7 @@ export function SigninForm() {
       if (result?.error) {
         setError("Invalid email or password")
       } else {
-        router.push("/")
+        router.push(selectedRedirect)
         router.refresh()
       }
     } catch (err) {
@@ -89,11 +92,14 @@ export function SigninForm() {
             <button
               key={account.email}
               type="button"
-              onClick={() => fillDemoCredentials(account.email, account.password)}
+              onClick={() => fillDemoCredentials(account.email, account.password, account.redirect)}
               className={`w-full rounded-lg border p-2 text-left text-sm transition-all hover:shadow-md ${account.color}`}
             >
               <div className="flex items-center justify-between">
-                <span className="font-semibold">{account.role}</span>
+                <div>
+                  <span className="font-semibold">{account.role}</span>
+                  <span className="ml-2 text-xs opacity-60">→ {account.redirect}</span>
+                </div>
                 <span className="text-xs opacity-75">{account.email}</span>
               </div>
             </button>
