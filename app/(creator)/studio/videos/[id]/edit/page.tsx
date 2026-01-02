@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useParams, useRouter } from "next/navigation"
 import { Card } from "@/components/shared/ui/card"
 import { Button } from "@/components/shared/ui/button"
 import { Input } from "@/components/shared/ui/input"
@@ -13,26 +14,141 @@ import {
   Save,
   Eye,
   Upload,
-  Trash2
+  Trash2,
+  Loader2
 } from "lucide-react"
 
-export default function VideoEditPage() {
-  const [activeTab, setActiveTab] = useState("details")
+interface Video {
+  id: string
+  title: string
+  description: string | null
+  visibility: string
+  category: string | null
+  tags: string[]
+  thumbnail: string | null
+  monetizationEnabled: boolean
+  adsEnabled: boolean
+  viewCount: number
+  likeCount: number
+  commentCount: number
+}
 
-  // Mock data - in real app, this would come from server
-  const video = {
-    id: "1",
-    title: "Sample Video Title",
-    description: "Sample description...",
+export default function VideoEditPage() {
+  const params = useParams()
+  const router = useRouter()
+  const videoId = params.id as string
+
+  const [activeTab, setActiveTab] = useState("details")
+  const [video, setVideo] = useState<Video | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
     visibility: "PUBLIC",
     category: "Technology",
-    tags: ["tech", "tutorial"],
-    thumbnail: "",
-    monetizationEnabled: true,
-    adsEnabled: true,
-    views: 1234,
-    likes: 456,
-    comments: 78,
+    tags: "",
+  })
+
+  useEffect(() => {
+    const fetchVideo = async () => {
+      try {
+        const res = await fetch(`/api/videos/${videoId}`)
+        if (res.ok) {
+          const data = await res.json()
+          setVideo(data)
+          setFormData({
+            title: data.title || "",
+            description: data.description || "",
+            visibility: data.visibility || "PUBLIC",
+            category: data.category || "Technology",
+            tags: data.tags?.join(", ") || "",
+          })
+        }
+      } catch (error) {
+        console.error("Error fetching video:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (videoId) {
+      fetchVideo()
+    }
+  }, [videoId])
+
+  const handleSave = async () => {
+    setSaving(true)
+    setMessage(null)
+
+    try {
+      const res = await fetch(`/api/videos/${videoId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description,
+          visibility: formData.visibility,
+          category: formData.category,
+          tags: formData.tags.split(",").map(t => t.trim()).filter(Boolean),
+        }),
+      })
+
+      if (res.ok) {
+        setMessage({ type: "success", text: "Video updated successfully!" })
+      } else {
+        const data = await res.json()
+        setMessage({ type: "error", text: data.error || "Failed to update video" })
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "An error occurred" })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this video? This action cannot be undone.")) {
+      return
+    }
+
+    setDeleting(true)
+
+    try {
+      const res = await fetch(`/api/videos/${videoId}`, {
+        method: "DELETE",
+      })
+
+      if (res.ok) {
+        router.push("/studio/videos")
+      } else {
+        const data = await res.json()
+        setMessage({ type: "error", text: data.error || "Failed to delete video" })
+        setDeleting(false)
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "An error occurred" })
+      setDeleting(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+      </div>
+    )
+  }
+
+  if (!video) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-gray-500">Video not found</p>
+      </div>
+    )
   }
 
   const tabs = [
@@ -51,16 +167,24 @@ export default function VideoEditPage() {
           <p className="mt-1 text-gray-600">Manage video details and settings</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => window.open(`/watch/${videoId}`, "_blank")}>
             <Eye className="mr-2 h-4 w-4" />
             Preview
           </Button>
-          <Button>
-            <Save className="mr-2 h-4 w-4" />
-            Save Changes
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+            {saving ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </div>
+
+      {message && (
+        <div className={`mb-6 rounded-lg p-4 ${
+          message.type === "success" ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"
+        }`}>
+          {message.text}
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="mb-6 border-b border-gray-200">
@@ -108,13 +232,14 @@ export default function VideoEditPage() {
                 </label>
                 <Input
                   type="text"
-                  defaultValue={video.title}
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="mt-1"
                   placeholder="Enter video title"
                   maxLength={100}
                 />
                 <p className="mt-1 text-xs text-gray-500">
-                  {video.title.length}/100 characters
+                  {formData.title.length}/100 characters
                 </p>
               </div>
 
@@ -125,12 +250,13 @@ export default function VideoEditPage() {
                 <textarea
                   className="mt-1 w-full rounded-md border border-gray-300 p-2 text-sm"
                   rows={5}
-                  defaultValue={video.description}
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Tell viewers about your video..."
                   maxLength={5000}
                 />
                 <p className="mt-1 text-xs text-gray-500">
-                  {video.description.length}/5000 characters
+                  {formData.description.length}/5000 characters
                 </p>
               </div>
 
@@ -141,7 +267,8 @@ export default function VideoEditPage() {
                   </label>
                   <select
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 text-sm"
-                    defaultValue={video.category}
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   >
                     <option>Technology</option>
                     <option>Gaming</option>
@@ -160,7 +287,8 @@ export default function VideoEditPage() {
                   </label>
                   <select
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 text-sm"
-                    defaultValue={video.visibility}
+                    value={formData.visibility}
+                    onChange={(e) => setFormData({ ...formData, visibility: e.target.value })}
                   >
                     <option value="PUBLIC">Public</option>
                     <option value="UNLISTED">Unlisted</option>
@@ -175,7 +303,8 @@ export default function VideoEditPage() {
                 </label>
                 <Input
                   type="text"
-                  defaultValue={video.tags.join(", ")}
+                  value={formData.tags}
+                  onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
                   className="mt-1"
                   placeholder="Separate tags with commas"
                 />
@@ -480,20 +609,20 @@ export default function VideoEditPage() {
           <div className="grid gap-4 sm:grid-cols-4">
             <Card className="p-4">
               <p className="text-sm text-gray-600">Views</p>
-              <p className="mt-1 text-2xl font-bold">{video.views.toLocaleString()}</p>
+              <p className="mt-1 text-2xl font-bold">{video.viewCount.toLocaleString()}</p>
             </Card>
             <Card className="p-4">
               <p className="text-sm text-gray-600">Likes</p>
-              <p className="mt-1 text-2xl font-bold">{video.likes.toLocaleString()}</p>
+              <p className="mt-1 text-2xl font-bold">{video.likeCount.toLocaleString()}</p>
             </Card>
             <Card className="p-4">
               <p className="text-sm text-gray-600">Comments</p>
-              <p className="mt-1 text-2xl font-bold">{video.comments}</p>
+              <p className="mt-1 text-2xl font-bold">{video.commentCount}</p>
             </Card>
             <Card className="p-4">
               <p className="text-sm text-gray-600">Engagement</p>
               <p className="mt-1 text-2xl font-bold">
-                {((video.likes + video.comments) / video.views * 100).toFixed(1)}%
+                {video.viewCount > 0 ? ((video.likeCount + video.commentCount) / video.viewCount * 100).toFixed(1) : 0}%
               </p>
             </Card>
           </div>
@@ -560,9 +689,9 @@ export default function VideoEditPage() {
               This action cannot be undone
             </p>
           </div>
-          <Button variant="destructive">
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete Video
+          <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
+            {deleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+            {deleting ? "Deleting..." : "Delete Video"}
           </Button>
         </div>
       </Card>

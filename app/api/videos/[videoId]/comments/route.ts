@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth/auth"
 import { prisma } from "@/lib/db/prisma"
+import sanitizeHtml from "sanitize-html"
+
+// Sanitize options - allow basic text formatting only
+const sanitizeOptions = {
+  allowedTags: [], // No HTML tags allowed in comments
+  allowedAttributes: {},
+  disallowedTagsMode: "discard" as const,
+}
 
 export async function GET(
   req: NextRequest,
@@ -85,9 +93,19 @@ export async function POST(
       )
     }
 
+    // Sanitize content to prevent XSS attacks
+    const sanitizedContent = sanitizeHtml(content.trim(), sanitizeOptions)
+
+    if (sanitizedContent.length === 0) {
+      return NextResponse.json(
+        { error: "Comment cannot be empty" },
+        { status: 400 }
+      )
+    }
+
     const comment = await prisma.comment.create({
       data: {
-        content,
+        content: sanitizedContent,
         videoId: videoId,
         userId: session.user.id,
         parentId,

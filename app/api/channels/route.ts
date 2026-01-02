@@ -10,6 +10,12 @@ const createChannelSchema = z.object({
   category: z.string().optional().nullable(),
 })
 
+const updateChannelSchema = z.object({
+  name: z.string().min(3).max(50).optional(),
+  handle: z.string().min(3).max(30).regex(/^@?[a-zA-Z0-9_-]+$/).optional(),
+  description: z.string().max(1000).optional().nullable(),
+})
+
 // GET: List user's channels
 export async function GET(req: NextRequest) {
   try {
@@ -125,6 +131,77 @@ export async function POST(req: NextRequest) {
     console.error("Error creating channel:", error)
     return NextResponse.json(
       { error: "Failed to create channel" },
+      { status: 500 }
+    )
+  }
+}
+
+// PATCH: Update user's channel
+export async function PATCH(req: NextRequest) {
+  try {
+    const session = await auth()
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const body = await req.json()
+    const validatedData = updateChannelSchema.parse(body)
+
+    // Get user's channel
+    const channel = await prisma.channel.findFirst({
+      where: { ownerId: session.user.id },
+    })
+
+    if (!channel) {
+      return NextResponse.json({ error: "Channel not found" }, { status: 404 })
+    }
+
+    // If handle is being updated, check if it's already taken
+    if (validatedData.handle) {
+      const normalizedHandle = validatedData.handle.startsWith("@")
+        ? validatedData.handle
+        : `@${validatedData.handle}`
+
+      if (normalizedHandle !== channel.handle) {
+        const handleExists = await prisma.channel.findFirst({
+          where: {
+            handle: normalizedHandle,
+            id: { not: channel.id },
+          },
+        })
+
+        if (handleExists) {
+          return NextResponse.json(
+            { error: "This handle is already taken" },
+            { status: 400 }
+          )
+        }
+      }
+      validatedData.handle = normalizedHandle
+    }
+
+    const updatedChannel = await prisma.channel.update({
+      where: { id: channel.id },
+      data: {
+        ...(validatedData.name && { name: validatedData.name }),
+        ...(validatedData.handle && { handle: validatedData.handle }),
+        ...(validatedData.description !== undefined && { description: validatedData.description }),
+      },
+    })
+
+    return NextResponse.json({ channel: updatedChannel, message: "Channel updated successfully" })
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: "Invalid data", details: error.issues },
+        { status: 400 }
+      )
+    }
+
+    console.error("Error updating channel:", error)
+    return NextResponse.json(
+      { error: "Failed to update channel" },
       { status: 500 }
     )
   }
