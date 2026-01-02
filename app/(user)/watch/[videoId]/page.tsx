@@ -1,13 +1,12 @@
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/db/prisma"
 import { VideoPlayer } from "@/components/shared/video/video-player"
-import { Share2, Flag, MoreHorizontal, Clock, ListPlus } from "lucide-react"
-import { Button } from "@/components/shared/ui/button"
 import { VideoCard } from "@/components/user/video-card"
 import { Comments } from "@/components/user/comments"
 import { SubscribeButton } from "@/components/user/subscribe-button"
 import { LikeButton } from "@/components/user/like-button"
 import { WatchLaterButton } from "@/components/user/watch-later-button"
+import { VideoActions } from "@/components/user/video-actions"
 import { formatDistanceToNow } from "date-fns"
 import { auth } from "@/lib/auth/auth"
 
@@ -171,23 +170,9 @@ export default async function WatchPage({
                 initialDislikeCount={video.dislikeCount}
               />
 
-              <Button variant="ghost" size="icon">
-                <Share2 className="h-5 w-5" />
-              </Button>
-
               <WatchLaterButton videoId={video.id} />
 
-              <Button variant="ghost" size="icon">
-                <ListPlus className="h-5 w-5" />
-              </Button>
-
-              <Button variant="ghost" size="icon">
-                <Flag className="h-5 w-5" />
-              </Button>
-
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="h-5 w-5" />
-              </Button>
+              <VideoActions videoId={video.id} title={video.title} />
             </div>
           </div>
 

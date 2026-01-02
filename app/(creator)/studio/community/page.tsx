@@ -136,6 +136,27 @@ export default function CommunityPage() {
     setShowMenu(null)
   }
 
+  const handleLikePost = async (postId: string) => {
+    try {
+      const res = await fetch(`/api/community-posts/${postId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "like" }),
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        setPosts(
+          posts.map((p) =>
+            p.id === postId ? { ...p, likeCount: data.likeCount } : p
+          )
+        )
+      }
+    } catch (error) {
+      console.error("Error liking post:", error)
+    }
+  }
+
   if (status === "loading" || loading) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
@@ -358,14 +379,17 @@ export default function CommunityPage() {
                 )}
 
                 <div className="mt-4 flex items-center gap-6 text-gray-600">
-                  <button className="flex items-center gap-2 hover:text-gray-900">
+                  <button
+                    onClick={() => handleLikePost(post.id)}
+                    className="flex items-center gap-2 hover:text-blue-600"
+                  >
                     <ThumbsUp className="h-5 w-5" />
                     {post.likeCount}
                   </button>
-                  <button className="flex items-center gap-2 hover:text-gray-900">
+                  <span className="flex items-center gap-2">
                     <MessageCircle className="h-5 w-5" />
                     {post.commentCount}
-                  </button>
+                  </span>
                 </div>
               </div>
             ))

@@ -24,8 +24,9 @@ export default async function StudioPage() {
 
   const primaryChannel = channels[0]
 
-  // Get channel stats
+  // Get channel stats and recent videos
   let stats = null
+  let recentVideos: any[] = []
   if (primaryChannel) {
     const videos = await prisma.video.findMany({
       where: { channelId: primaryChannel.id },
@@ -40,6 +41,23 @@ export default async function StudioPage() {
       totalVideos: videos.length,
       subscribers: primaryChannel._count.subscriptions,
     }
+
+    // Get recent videos
+    recentVideos = await prisma.video.findMany({
+      where: { channelId: primaryChannel.id },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      select: {
+        id: true,
+        title: true,
+        thumbnailUrl: true,
+        viewCount: true,
+        likeCount: true,
+        visibility: true,
+        processingStatus: true,
+        createdAt: true,
+      },
+    })
   }
 
   return (
@@ -212,9 +230,55 @@ export default async function StudioPage() {
               </div>
 
               <div className="rounded-lg border border-gray-200 bg-white">
-                <div className="p-4 text-center text-gray-600">
-                  No videos yet. Upload your first video to get started!
-                </div>
+                {recentVideos.length > 0 ? (
+                  <div className="divide-y divide-gray-200">
+                    {recentVideos.map((video) => (
+                      <Link
+                        key={video.id}
+                        href={`/studio/videos/${video.id}/edit`}
+                        className="flex items-center gap-4 p-4 hover:bg-gray-50"
+                      >
+                        <div className="relative h-16 w-28 flex-shrink-0 overflow-hidden rounded bg-gray-200">
+                          {video.thumbnailUrl ? (
+                            <img
+                              src={video.thumbnailUrl}
+                              alt={video.title}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center">
+                              <Video className="h-6 w-6 text-gray-400" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-gray-900 truncate">
+                            {video.title}
+                          </h3>
+                          <div className="mt-1 flex items-center gap-3 text-sm text-gray-500">
+                            <span
+                              className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                                video.visibility === "PUBLIC"
+                                  ? "bg-green-100 text-green-800"
+                                  : video.visibility === "UNLISTED"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
+                            >
+                              {video.visibility}
+                            </span>
+                            <span>{Number(video.viewCount).toLocaleString()} views</span>
+                            <span>{video.likeCount} likes</span>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 text-center text-gray-600">
+                    No videos yet. Upload your first video to get started!
+                  </div>
+                )}
               </div>
             </div>
           </>
