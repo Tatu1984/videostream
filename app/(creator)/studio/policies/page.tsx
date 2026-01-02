@@ -117,7 +117,7 @@ export default async function StudioPoliciesPage() {
     resolvedFlags: flags.filter((f) => f.status === "RESOLVED").length,
     pendingClaims: copyrightClaims.filter((c) => c.status === "PENDING").length,
     upheldClaims: copyrightClaims.filter((c) => c.status === "UPHELD").length,
-    activeStrikes: strikes.filter((s) => !s.resolved).length,
+    activeStrikes: strikes.filter((s) => s.active).length,
   }
 
   return (
@@ -326,14 +326,9 @@ export default async function StudioPoliciesPage() {
                   </div>
                   <h3 className="mt-1 font-medium text-gray-900">{claim.video.title}</h3>
                   <p className="mt-1 text-sm text-gray-600">
-                    Claimant: {claim.rightsHolder.name}
+                    Claimant: {claim.rightsHolder?.name || "Unknown"}
                   </p>
                   <p className="mt-1 text-sm text-gray-700">{claim.description}</p>
-                  {claim.action && (
-                    <p className="mt-1 text-sm font-medium text-orange-700">
-                      Action: {claim.action}
-                    </p>
-                  )}
                   <p className="mt-1 text-xs text-gray-500">
                     Filed {new Date(claim.createdAt).toLocaleDateString()}
                   </p>

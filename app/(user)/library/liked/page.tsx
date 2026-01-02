@@ -14,7 +14,6 @@ export default async function LikedVideosPage() {
     where: {
       userId: session.user.id,
       type: "LIKE",
-      targetType: "VIDEO",
     },
     include: {
       video: {

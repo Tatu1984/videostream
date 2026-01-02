@@ -44,22 +44,76 @@ export default async function StudioAnalyticsPage() {
   })
 
   // Calculate analytics
-  const totalViews = videos.reduce((sum, v) => sum + v.viewCount, 0)
+  const totalViews = videos.reduce((sum, v) => sum + Number(v.viewCount), 0)
   const totalLikes = videos.reduce((sum, v) => sum + v.likeCount, 0)
   const totalComments = videos.reduce((sum, v) => sum + v.commentCount, 0)
-  const totalWatchTime = videos.reduce((sum, v) => sum + (v.duration || 0) * v.viewCount, 0)
+  const totalWatchTime = videos.reduce((sum, v) => sum + (v.duration || 0) * Number(v.viewCount), 0)
   const avgViewsPerVideo = videos.length > 0 ? Math.floor(totalViews / videos.length) : 0
 
-  // Mock data for charts
+  // Get real analytics data from VideoAnalytics
+  const videoIds = videos.map((v) => v.id)
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 28)
+
+  const analyticsData = await prisma.videoAnalytics.findMany({
+    where: {
+      videoId: { in: videoIds },
+      date: { gte: thirtyDaysAgo },
+    },
+    orderBy: { date: "asc" },
+  })
+
+  // Aggregate analytics by date
+  const analyticsMap = new Map<string, { views: number; watchTime: number; searchViews: number; suggestedViews: number; browseViews: number; externalViews: number }>()
+
+  analyticsData.forEach((a) => {
+    const dateKey = a.date.toISOString().split("T")[0]
+    const existing = analyticsMap.get(dateKey) || { views: 0, watchTime: 0, searchViews: 0, suggestedViews: 0, browseViews: 0, externalViews: 0 }
+    analyticsMap.set(dateKey, {
+      views: existing.views + a.views,
+      watchTime: existing.watchTime + a.watchTime,
+      searchViews: existing.searchViews + a.searchViews,
+      suggestedViews: existing.suggestedViews + a.suggestedViews,
+      browseViews: existing.browseViews + a.browseViews,
+      externalViews: existing.externalViews + a.externalViews,
+    })
+  })
+
+  // Generate last 28 days with real or zero data
   const last28Days = Array.from({ length: 28 }, (_, i) => {
     const date = new Date()
     date.setDate(date.getDate() - (27 - i))
+    const dateKey = date.toISOString().split("T")[0]
+    const dayData = analyticsMap.get(dateKey) || { views: 0, watchTime: 0 }
     return {
       date: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      views: Math.floor(Math.random() * 5000) + 1000,
-      watchTime: Math.floor(Math.random() * 10000) + 2000,
+      views: dayData.views,
+      watchTime: dayData.watchTime,
     }
   })
+
+  // Calculate traffic source totals
+  const trafficTotals = analyticsData.reduce(
+    (acc, a) => ({
+      search: acc.search + a.searchViews,
+      suggested: acc.suggested + a.suggestedViews,
+      browse: acc.browse + a.browseViews,
+      external: acc.external + a.externalViews,
+    }),
+    { search: 0, suggested: 0, browse: 0, external: 0 }
+  )
+  const totalTrafficViews = trafficTotals.search + trafficTotals.suggested + trafficTotals.browse + trafficTotals.external || 1
+
+  // Get estimated revenue from transactions
+  const revenue = await prisma.transaction.aggregate({
+    where: {
+      userId: session.user.id,
+      status: "COMPLETED",
+      type: { in: ["AD_REVENUE", "MEMBERSHIP", "SUPERCHAT", "DONATION"] },
+    },
+    _sum: { amount: true },
+  })
+  const estimatedRevenue = revenue._sum.amount || 0
 
   return (
     <div>
@@ -131,7 +185,7 @@ export default async function StudioAnalyticsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Estimated Revenue</p>
-              <p className="mt-1 text-3xl font-bold">$2,456</p>
+              <p className="mt-1 text-3xl font-bold">${estimatedRevenue.toLocaleString()}</p>
               <div className="mt-2 flex items-center gap-1 text-sm text-green-600">
                 <TrendingUp className="h-4 w-4" />
                 <span>15.7%</span>
@@ -210,12 +264,13 @@ export default async function StudioAnalyticsPage() {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {videos
-                .sort((a, b) => b.viewCount - a.viewCount)
+                .sort((a, b) => Number(b.viewCount) - Number(a.viewCount))
                 .slice(0, 5)
                 .map((video) => {
+                  const viewCount = Number(video.viewCount)
                   const engagementRate =
-                    video.viewCount > 0
-                      ? (((video.likeCount + video.commentCount) / video.viewCount) * 100).toFixed(2)
+                    viewCount > 0
+                      ? (((video.likeCount + video.commentCount) / viewCount) * 100).toFixed(2)
                       : "0.00"
                   return (
                     <tr key={video.id}>
@@ -259,11 +314,10 @@ export default async function StudioAnalyticsPage() {
           <h2 className="mb-4 text-xl font-semibold">Top Traffic Sources</h2>
           <div className="space-y-3">
             {[
-              { source: "YouTube Search", percentage: 42 },
-              { source: "Suggested Videos", percentage: 28 },
-              { source: "Browse Features", percentage: 15 },
-              { source: "External", percentage: 10 },
-              { source: "Direct", percentage: 5 },
+              { source: "Search", percentage: Math.round((trafficTotals.search / totalTrafficViews) * 100) || 0 },
+              { source: "Suggested Videos", percentage: Math.round((trafficTotals.suggested / totalTrafficViews) * 100) || 0 },
+              { source: "Browse Features", percentage: Math.round((trafficTotals.browse / totalTrafficViews) * 100) || 0 },
+              { source: "External", percentage: Math.round((trafficTotals.external / totalTrafficViews) * 100) || 0 },
             ].map((item) => (
               <div key={item.source}>
                 <div className="mb-1 flex justify-between text-sm">

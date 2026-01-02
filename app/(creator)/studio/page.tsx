@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { prisma } from "@/lib/db/prisma"
 import Link from "next/link"
 import { Button } from "@/components/shared/ui/button"
-import { Upload, Video, BarChart3, DollarSign } from "lucide-react"
+import { Upload, Video, BarChart3, DollarSign, Shield, Users, MessageSquare } from "lucide-react"
 
 export default async function StudioPage() {
   const session = await auth()
@@ -115,7 +115,7 @@ export default async function StudioPage() {
             {/* Quick Actions */}
             <div className="mb-8">
               <h2 className="mb-4 text-lg font-semibold">Quick Actions</h2>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <Link href="/studio/upload">
                   <div className="flex items-center space-x-4 rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md">
                     <div className="rounded-full bg-blue-100 p-3">
@@ -153,6 +153,48 @@ export default async function StudioPage() {
                       <h3 className="font-medium">View Analytics</h3>
                       <p className="text-sm text-gray-600">
                         Track your channel performance
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+
+                <Link href="/studio/monetization">
+                  <div className="flex items-center space-x-4 rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md">
+                    <div className="rounded-full bg-yellow-100 p-3">
+                      <DollarSign className="h-6 w-6 text-yellow-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Monetization</h3>
+                      <p className="text-sm text-gray-600">
+                        Manage earnings and payouts
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+
+                <Link href="/studio/copyright">
+                  <div className="flex items-center space-x-4 rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md">
+                    <div className="rounded-full bg-red-100 p-3">
+                      <Shield className="h-6 w-6 text-red-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Copyright</h3>
+                      <p className="text-sm text-gray-600">
+                        Manage copyright claims
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+
+                <Link href="/studio/community">
+                  <div className="flex items-center space-x-4 rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md">
+                    <div className="rounded-full bg-indigo-100 p-3">
+                      <MessageSquare className="h-6 w-6 text-indigo-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Community</h3>
+                      <p className="text-sm text-gray-600">
+                        Create posts for your subscribers
                       </p>
                     </div>
                   </div>

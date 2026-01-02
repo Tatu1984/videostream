@@ -1,10 +1,15 @@
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/db/prisma"
 import { VideoPlayer } from "@/components/shared/video/video-player"
-import { ThumbsUp, ThumbsDown, Share2, Flag, MoreHorizontal } from "lucide-react"
+import { Share2, Flag, MoreHorizontal, Clock, ListPlus } from "lucide-react"
 import { Button } from "@/components/shared/ui/button"
 import { VideoCard } from "@/components/user/video-card"
+import { Comments } from "@/components/user/comments"
+import { SubscribeButton } from "@/components/user/subscribe-button"
+import { LikeButton } from "@/components/user/like-button"
+import { WatchLaterButton } from "@/components/user/watch-later-button"
 import { formatDistanceToNow } from "date-fns"
+import { auth } from "@/lib/auth/auth"
 
 function formatViews(views: bigint): string {
   const num = Number(views)
@@ -19,6 +24,8 @@ export default async function WatchPage({
   params: Promise<{ videoId: string }>
 }) {
   const { videoId } = await params
+  const session = await auth()
+
   const video = await prisma.video.findUnique({
     where: { id: videoId },
     include: {
@@ -30,6 +37,7 @@ export default async function WatchPage({
           avatar: true,
           verified: true,
           subscriberCount: true,
+          ownerId: true,
         },
       },
       assets: {
@@ -44,6 +52,31 @@ export default async function WatchPage({
 
   if (!video) {
     notFound()
+  }
+
+  // Increment view count
+  await prisma.video.update({
+    where: { id: videoId },
+    data: { viewCount: { increment: 1 } },
+  })
+
+  // Record watch history if user is logged in
+  if (session?.user?.id) {
+    await prisma.watchHistory.upsert({
+      where: {
+        id: `${session.user.id}-${videoId}`,
+      },
+      create: {
+        id: `${session.user.id}-${videoId}`,
+        userId: session.user.id,
+        videoId: videoId,
+      },
+      update: {
+        watchedAt: new Date(),
+      },
+    }).catch(() => {
+      // Ignore errors if watch history doesn't exist
+    })
   }
 
   // Get suggested videos
@@ -84,7 +117,7 @@ export default async function WatchPage({
         <div className="mt-4">
           <h1 className="text-xl font-bold text-gray-900">{video.title}</h1>
 
-          <div className="mt-3 flex items-center justify-between">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
                 <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-300">
@@ -103,9 +136,12 @@ export default async function WatchPage({
 
                 <div>
                   <div className="flex items-center">
-                    <h3 className="font-medium text-gray-900">
+                    <a
+                      href={`/channel/${video.channel.id}`}
+                      className="font-medium text-gray-900 hover:text-gray-700"
+                    >
                       {video.channel.name}
-                    </h3>
+                    </a>
                     {video.channel.verified && (
                       <svg
                         className="ml-1 h-4 w-4 text-gray-600"
@@ -122,24 +158,27 @@ export default async function WatchPage({
                 </div>
               </div>
 
-              <Button>Subscribe</Button>
+              <SubscribeButton
+                channelId={video.channel.id}
+                channelName={video.channel.name}
+              />
             </div>
 
             <div className="flex items-center space-x-2">
-              <div className="flex items-center divide-x divide-gray-300 rounded-full bg-gray-100">
-                <button className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-200 rounded-l-full">
-                  <ThumbsUp className="h-5 w-5" />
-                  <span className="text-sm font-medium">
-                    {video.likeCount}
-                  </span>
-                </button>
-                <button className="px-4 py-2 hover:bg-gray-200 rounded-r-full">
-                  <ThumbsDown className="h-5 w-5" />
-                </button>
-              </div>
+              <LikeButton
+                videoId={video.id}
+                initialLikeCount={video.likeCount}
+                initialDislikeCount={video.dislikeCount}
+              />
 
               <Button variant="ghost" size="icon">
                 <Share2 className="h-5 w-5" />
+              </Button>
+
+              <WatchLaterButton videoId={video.id} />
+
+              <Button variant="ghost" size="icon">
+                <ListPlus className="h-5 w-5" />
               </Button>
 
               <Button variant="ghost" size="icon">
@@ -169,24 +208,57 @@ export default async function WatchPage({
                 {video.description}
               </p>
             )}
+
+            {video.tags && video.tags.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {video.tags.map((tag) => (
+                  <a
+                    key={tag}
+                    href={`/search?q=${encodeURIComponent(tag)}`}
+                    className="text-sm text-blue-600 hover:text-blue-700"
+                  >
+                    #{tag}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Comments section placeholder */}
-          <div className="mt-6">
-            <h3 className="text-lg font-medium">Comments</h3>
-            <p className="mt-2 text-sm text-gray-600">
-              Comments feature coming soon
-            </p>
-          </div>
+          {/* Chapters */}
+          {video.chapters && video.chapters.length > 0 && (
+            <div className="mt-4 rounded-lg border p-4">
+              <h3 className="mb-3 font-medium">Chapters</h3>
+              <div className="space-y-2">
+                {video.chapters.map((chapter) => (
+                  <div
+                    key={chapter.id}
+                    className="flex items-center gap-3 text-sm"
+                  >
+                    <span className="font-mono text-blue-600">
+                      {Math.floor(chapter.timestamp / 60)}:
+                      {(chapter.timestamp % 60).toString().padStart(2, "0")}
+                    </span>
+                    <span>{chapter.title}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Comments section */}
+          <Comments
+            videoId={video.id}
+            channelOwnerId={video.channel.ownerId}
+            commentCount={video.commentCount}
+          />
         </div>
       </div>
 
       {/* Sidebar - Suggested videos */}
       <div className="space-y-4">
+        <h3 className="font-medium text-gray-900">Up next</h3>
         {suggestedVideos.map((suggestedVideo) => (
-          <div key={suggestedVideo.id} className="flex gap-2">
-            <VideoCard video={suggestedVideo} />
-          </div>
+          <VideoCard key={suggestedVideo.id} video={suggestedVideo} layout="horizontal" />
         ))}
       </div>
     </div>

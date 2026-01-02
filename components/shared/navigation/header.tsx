@@ -3,9 +3,10 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Search, Upload, Bell, User, Menu } from "lucide-react"
+import { Search, Upload, User, Menu, Video } from "lucide-react"
 import { Button } from "@/components/shared/ui/button"
 import { Input } from "@/components/shared/ui/input"
+import { NotificationBell } from "@/components/user/notification-bell"
 
 interface HeaderProps {
   user?: {
@@ -18,6 +19,7 @@ interface HeaderProps {
 export function Header({ user }: HeaderProps) {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
+  const [showCreateMenu, setShowCreateMenu] = useState(false)
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -63,15 +65,41 @@ export function Header({ user }: HeaderProps) {
         <div className="flex items-center space-x-2">
           {user ? (
             <>
-              <Link href="/upload">
-                <Button variant="ghost" size="icon">
+              {/* Create button with dropdown */}
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowCreateMenu(!showCreateMenu)}
+                >
                   <Upload className="h-5 w-5" />
                 </Button>
-              </Link>
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-              </Button>
-              <Link href="/profile">
+
+                {showCreateMenu && (
+                  <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border bg-white py-1 shadow-lg">
+                    <Link
+                      href="/studio/upload"
+                      onClick={() => setShowCreateMenu(false)}
+                      className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      <Upload className="h-4 w-4" />
+                      Upload video
+                    </Link>
+                    <Link
+                      href="/studio/shorts/create"
+                      onClick={() => setShowCreateMenu(false)}
+                      className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      <Video className="h-4 w-4" />
+                      Create Short
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              <NotificationBell />
+
+              <Link href="/settings/account">
                 <Button variant="ghost" size="icon" className="rounded-full">
                   {user.image ? (
                     <img

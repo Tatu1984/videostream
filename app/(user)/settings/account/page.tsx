@@ -31,7 +31,7 @@ export default async function AccountSettingsPage() {
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-2xl font-medium text-gray-600">
-                    {session.user.name?.[0] || session.user.email[0]}
+                    {session.user.name?.[0] || session.user.email?.[0] || "U"}
                   </div>
                 )}
               </div>
@@ -67,7 +67,7 @@ export default async function AccountSettingsPage() {
             </label>
             <Input
               type="text"
-              defaultValue={session.user.username || ""}
+              defaultValue=""
               className="mt-1"
               placeholder="username"
             />

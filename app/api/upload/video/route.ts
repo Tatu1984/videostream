@@ -5,15 +5,9 @@ import { writeFile, mkdir } from "fs/promises"
 import { existsSync } from "fs"
 import path from "path"
 
-// Allow large file uploads
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
-
 // Route segment config for App Router
 export const maxDuration = 300 // 5 minutes timeout for uploads
+export const dynamic = "force-dynamic"
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024 // 500MB
 const ALLOWED_TYPES = [

@@ -17,6 +17,7 @@ interface VideoCardProps {
       verified: boolean
     }
   }
+  layout?: "vertical" | "horizontal"
 }
 
 function formatViews(views: bigint): string {
@@ -45,7 +46,65 @@ function formatDuration(seconds?: number | null): string {
   return `${minutes}:${secs.toString().padStart(2, "0")}`
 }
 
-export function VideoCard({ video }: VideoCardProps) {
+export function VideoCard({ video, layout = "vertical" }: VideoCardProps) {
+  if (layout === "horizontal") {
+    return (
+      <div className="group flex cursor-pointer gap-2">
+        <Link href={`/watch/${video.id}`} className="flex-shrink-0">
+          <div className="relative h-24 w-40 overflow-hidden rounded-lg bg-gray-200">
+            {video.thumbnailUrl ? (
+              <img
+                src={video.thumbnailUrl}
+                alt={video.title}
+                className="h-full w-full object-cover transition-transform group-hover:scale-105"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">
+                No thumbnail
+              </div>
+            )}
+
+            {video.duration && (
+              <div className="absolute bottom-1 right-1 rounded bg-black/80 px-1 py-0.5 text-xs font-medium text-white">
+                {formatDuration(video.duration)}
+              </div>
+            )}
+          </div>
+        </Link>
+
+        <div className="flex-1 min-w-0">
+          <Link href={`/watch/${video.id}`}>
+            <h3 className="line-clamp-2 text-sm font-medium text-gray-900 group-hover:text-blue-600">
+              {video.title}
+            </h3>
+          </Link>
+
+          <Link href={`/channel/${video.channel.handle}`}>
+            <div className="mt-1 flex items-center">
+              <p className="text-xs text-gray-600 hover:text-gray-900">
+                {video.channel.name}
+              </p>
+              {video.channel.verified && (
+                <svg
+                  className="ml-1 h-3 w-3 text-gray-600"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                </svg>
+              )}
+            </div>
+          </Link>
+
+          <p className="mt-0.5 text-xs text-gray-600">
+            {formatViews(video.viewCount)} views •{" "}
+            {formatDistanceToNow(new Date(video.createdAt), { addSuffix: true })}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="group cursor-pointer">
       <Link href={`/watch/${video.id}`}>
