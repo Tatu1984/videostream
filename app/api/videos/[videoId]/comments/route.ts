@@ -119,3 +119,77 @@ export async function POST(
     )
   }
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ videoId: string }> }
+) {
+  try {
+    const { videoId } = await params
+    const session = await auth()
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(req.url)
+    const commentId = searchParams.get("commentId")
+
+    if (!commentId) {
+      return NextResponse.json(
+        { error: "Comment ID is required" },
+        { status: 400 }
+      )
+    }
+
+    // Find the comment
+    const comment = await prisma.comment.findUnique({
+      where: { id: commentId },
+      include: {
+        video: {
+          include: {
+            channel: {
+              select: { ownerId: true },
+            },
+          },
+        },
+      },
+    })
+
+    if (!comment) {
+      return NextResponse.json({ error: "Comment not found" }, { status: 404 })
+    }
+
+    // Check permission: user owns comment or owns channel
+    const isCommentOwner = comment.userId === session.user.id
+    const isChannelOwner = comment.video.channel.ownerId === session.user.id
+
+    if (!isCommentOwner && !isChannelOwner) {
+      return NextResponse.json(
+        { error: "You don't have permission to delete this comment" },
+        { status: 403 }
+      )
+    }
+
+    // Delete the comment and its replies
+    await prisma.comment.deleteMany({
+      where: {
+        OR: [{ id: commentId }, { parentId: commentId }],
+      },
+    })
+
+    // Decrement comment count on video
+    await prisma.video.update({
+      where: { id: videoId },
+      data: { commentCount: { decrement: 1 } },
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error("Error deleting comment:", error)
+    return NextResponse.json(
+      { error: "Failed to delete comment" },
+      { status: 500 }
+    )
+  }
+}
