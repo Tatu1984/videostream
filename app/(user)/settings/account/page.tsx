@@ -1,18 +1,23 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { useState, useEffect, useRef } from "react"
+import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Card } from "@/components/shared/ui/card"
 import { Button } from "@/components/shared/ui/button"
 import { Input } from "@/components/shared/ui/input"
-import { Loader2, CheckCircle, AlertCircle } from "lucide-react"
+import { Loader2, CheckCircle, AlertCircle, X, Upload } from "lucide-react"
 
 export default function AccountSettingsPage() {
   const { data: session, status, update } = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [profileLoading, setProfileLoading] = useState(true)
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [formData, setFormData] = useState({
     name: "",
@@ -21,19 +26,41 @@ export default function AccountSettingsPage() {
     phone: "",
   })
 
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  })
+
+  const [deleteConfirm, setDeleteConfirm] = useState("")
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/auth/signin")
     }
-    if (session?.user) {
-      setFormData({
-        name: session.user.name || "",
-        username: "",
-        bio: "",
-        phone: "",
-      })
+    if (status === "authenticated") {
+      fetchProfile()
     }
-  }, [session, status, router])
+  }, [status, router])
+
+  const fetchProfile = async () => {
+    try {
+      const res = await fetch("/api/user/profile")
+      if (res.ok) {
+        const data = await res.json()
+        setFormData({
+          name: data.user.name || "",
+          username: data.user.username || "",
+          bio: data.user.bio || "",
+          phone: data.user.phone || "",
+        })
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error)
+    } finally {
+      setProfileLoading(false)
+    }
+  }
 
   const handleSave = async () => {
     setLoading(true)
@@ -60,7 +87,108 @@ export default function AccountSettingsPage() {
     }
   }
 
-  if (status === "loading") {
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (file.size > 2 * 1024 * 1024) {
+      setMessage({ type: "error", text: "File size must be less than 2MB" })
+      return
+    }
+
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+      formData.append("type", "avatar")
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        await fetch("/api/user/profile", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: data.url }),
+        })
+        await update()
+        setMessage({ type: "success", text: "Profile photo updated!" })
+      } else {
+        setMessage({ type: "error", text: "Failed to upload photo" })
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "Failed to upload photo" })
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleChangePassword = async () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setMessage({ type: "error", text: "Passwords do not match" })
+      return
+    }
+
+    if (passwordData.newPassword.length < 8) {
+      setMessage({ type: "error", text: "Password must be at least 8 characters" })
+      return
+    }
+
+    setLoading(true)
+    try {
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      })
+
+      if (res.ok) {
+        setMessage({ type: "success", text: "Password changed successfully!" })
+        setShowPasswordModal(false)
+        setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" })
+      } else {
+        const data = await res.json()
+        setMessage({ type: "error", text: data.error || "Failed to change password" })
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "Failed to change password" })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirm !== "DELETE") {
+      setMessage({ type: "error", text: "Please type DELETE to confirm" })
+      return
+    }
+
+    setLoading(true)
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "DELETE",
+      })
+
+      if (res.ok) {
+        await signOut({ callbackUrl: "/" })
+      } else {
+        const data = await res.json()
+        setMessage({ type: "error", text: data.error || "Failed to delete account" })
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "Failed to delete account" })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (status === "loading" || profileLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
@@ -102,7 +230,24 @@ export default function AccountSettingsPage() {
                 )}
               </div>
               <div>
-                <Button size="sm" variant="outline">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handlePhotoChange}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  {uploading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Upload className="mr-2 h-4 w-4" />
+                  )}
                   Change Photo
                 </Button>
                 <p className="mt-1 text-xs text-gray-500">
@@ -222,7 +367,9 @@ export default function AccountSettingsPage() {
                 disabled
                 className="flex-1"
               />
-              <Button variant="outline">Change Password</Button>
+              <Button variant="outline" onClick={() => setShowPasswordModal(true)}>
+                Change Password
+              </Button>
             </div>
           </div>
 
@@ -236,7 +383,9 @@ export default function AccountSettingsPage() {
                   Add an extra layer of security to your account
                 </p>
               </div>
-              <Button variant="outline">Enable 2FA</Button>
+              <Button variant="outline" disabled>
+                Coming Soon
+              </Button>
             </div>
           </div>
         </div>
@@ -255,10 +404,117 @@ export default function AccountSettingsPage() {
                 Permanently delete your account and all associated data
               </p>
             </div>
-            <Button variant="destructive">Delete Account</Button>
+            <Button variant="destructive" onClick={() => setShowDeleteModal(true)}>
+              Delete Account
+            </Button>
           </div>
         </div>
       </Card>
+
+      {/* Change Password Modal */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-md rounded-lg bg-white p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Change Password</h2>
+              <button onClick={() => setShowPasswordModal(false)}>
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1 block text-sm font-medium">Current Password</label>
+                <Input
+                  type="password"
+                  value={passwordData.currentPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                  placeholder="Enter current password"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium">New Password</label>
+                <Input
+                  type="password"
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                  placeholder="Enter new password"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium">Confirm New Password</label>
+                <Input
+                  type="password"
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                  placeholder="Confirm new password"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="ghost" onClick={() => setShowPasswordModal(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleChangePassword} disabled={loading}>
+                  {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Change Password
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Account Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-md rounded-lg bg-white p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-red-600">Delete Account</h2>
+              <button onClick={() => setShowDeleteModal(false)}>
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="rounded-lg bg-red-50 p-4">
+                <p className="text-sm text-red-700">
+                  This action is permanent and cannot be undone. All your data, including
+                  videos, comments, playlists, and channels will be permanently deleted.
+                </p>
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  Type DELETE to confirm
+                </label>
+                <Input
+                  type="text"
+                  value={deleteConfirm}
+                  onChange={(e) => setDeleteConfirm(e.target.value)}
+                  placeholder="DELETE"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="ghost" onClick={() => setShowDeleteModal(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={handleDeleteAccount}
+                  disabled={loading || deleteConfirm !== "DELETE"}
+                >
+                  {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Delete My Account
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

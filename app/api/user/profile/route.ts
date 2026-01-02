@@ -8,6 +8,7 @@ const updateProfileSchema = z.object({
   username: z.string().min(3).max(30).optional().nullable(),
   bio: z.string().max(160).optional().nullable(),
   phone: z.string().max(20).optional().nullable(),
+  image: z.string().url().optional().nullable(),
 })
 
 export async function GET(req: NextRequest) {
@@ -77,6 +78,7 @@ export async function PATCH(req: NextRequest) {
         username: data.username,
         bio: data.bio,
         phone: data.phone,
+        ...(data.image !== undefined && { image: data.image }),
       },
       select: {
         id: true,
@@ -101,6 +103,29 @@ export async function PATCH(req: NextRequest) {
     console.error("Error updating profile:", error)
     return NextResponse.json(
       { error: "Failed to update profile" },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const session = await auth()
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    // Delete user and all associated data (cascades configured in schema)
+    await prisma.user.delete({
+      where: { id: session.user.id },
+    })
+
+    return NextResponse.json({ message: "Account deleted successfully" })
+  } catch (error) {
+    console.error("Error deleting account:", error)
+    return NextResponse.json(
+      { error: "Failed to delete account" },
       { status: 500 }
     )
   }
