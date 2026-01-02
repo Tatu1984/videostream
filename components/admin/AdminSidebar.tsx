@@ -55,7 +55,7 @@ export function AdminSidebar() {
     {
       title: "REPORT & SUPPORT",
       items: [
-        { label: "Report", href: "/admin/moderation/flags", icon: Flag },
+        { label: "Report", href: "/admin/flags", icon: Flag },
         { label: "Copyright", href: "/admin/copyright/claims", icon: Shield },
         { label: "FAQ", href: "/admin/faq", icon: HelpCircle },
         { label: "Contact Us", href: "/admin/contact", icon: MessageSquare },
@@ -77,13 +77,13 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 bg-white border-r border-gray-100">
+    <aside className="fixed left-0 top-0 z-40 h-screen w-64 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800">
       {/* Logo */}
       <div className="flex h-16 items-center gap-3 px-6">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FF6B8A]">
           <PlaySquare className="h-5 w-5 text-white" />
         </div>
-        <span className="text-xl font-bold text-gray-900">Metube</span>
+        <span className="text-xl font-bold text-gray-900 dark:text-white">Metube</span>
       </div>
 
       {/* Navigation */}
@@ -107,7 +107,7 @@ export function AdminSidebar() {
                       className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                         active
                           ? "bg-[#FF6B8A] text-white"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
                       }`}
                     >
                       <item.icon className={`h-5 w-5 ${active ? "text-white" : "text-gray-400"}`} />

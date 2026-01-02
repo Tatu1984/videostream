@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db/prisma"
-import { Search, Filter, Eye, Trash2, AlertTriangle } from "lucide-react"
+import { Search, AlertTriangle } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
-import Link from "next/link"
+import { VideoActions } from "@/components/admin/VideoActions"
 
 function formatViews(views: bigint): string {
   const num = Number(views)
@@ -55,7 +55,7 @@ export default async function AdminVideosPage({
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Videos</h1>
-          <p className="text-gray-600">{total} total videos</p>
+          <p className="text-gray-600 dark:text-gray-400">{total} total videos</p>
         </div>
       </div>
 
@@ -69,13 +69,13 @@ export default async function AdminVideosPage({
               name="search"
               defaultValue={search}
               placeholder="Search videos..."
-              className="w-full rounded-lg border bg-white py-2 pl-10 pr-4 text-sm focus:border-blue-600 focus:outline-none"
+              className="w-full rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white py-2 pl-10 pr-4 text-sm focus:border-blue-600 focus:outline-none"
             />
           </form>
         </div>
         <select
           defaultValue={visibility || ""}
-          className="rounded-lg border bg-white px-4 py-2 text-sm"
+          className="rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white px-4 py-2 text-sm"
         >
           <option value="">All visibility</option>
           <option value="PUBLIC">Public</option>
@@ -85,9 +85,9 @@ export default async function AdminVideosPage({
       </div>
 
       {/* Videos Table */}
-      <div className="overflow-hidden rounded-lg border bg-white">
+      <div className="overflow-hidden rounded-lg border dark:border-gray-700 bg-white dark:bg-gray-900">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 dark:bg-gray-800">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Video
@@ -112,9 +112,9 @@ export default async function AdminVideosPage({
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
             {videos.map((video) => (
-              <tr key={video.id} className="hover:bg-gray-50">
+              <tr key={video.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div className="h-12 w-20 overflow-hidden rounded bg-gray-200">
@@ -172,22 +172,7 @@ export default async function AdminVideosPage({
                   })}
                 </td>
                 <td className="px-6 py-4">
-                  <div className="flex items-center justify-end gap-2">
-                    <Link
-                      href={`/watch/${video.id}`}
-                      target="_blank"
-                      className="rounded-lg p-2 hover:bg-gray-100"
-                      title="View"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Link>
-                    <button
-                      className="rounded-lg p-2 text-red-600 hover:bg-red-50"
-                      title="Delete"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+                  <VideoActions videoId={video.id} />
                 </td>
               </tr>
             ))}
