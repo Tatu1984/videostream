@@ -74,14 +74,14 @@ export function VideoCard({ video, layout = "vertical" }: VideoCardProps) {
 
         <div className="flex-1 min-w-0">
           <Link href={`/watch/${video.id}`}>
-            <h3 className="line-clamp-2 text-sm font-medium text-gray-900 group-hover:text-blue-600">
+            <h3 className="line-clamp-2 text-sm font-medium text-gray-900 group-hover:text-blue-600 dark:text-gray-100">
               {video.title}
             </h3>
           </Link>
 
           <Link href={`/channel/${video.channel.handle}`}>
             <div className="mt-1 flex items-center">
-              <p className="text-xs text-gray-600 hover:text-gray-900">
+              <p className="text-xs text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200">
                 {video.channel.name}
               </p>
               {video.channel.verified && (
@@ -96,7 +96,7 @@ export function VideoCard({ video, layout = "vertical" }: VideoCardProps) {
             </div>
           </Link>
 
-          <p className="mt-0.5 text-xs text-gray-600">
+          <p className="mt-0.5 text-xs text-gray-600 dark:text-gray-400">
             {formatViews(video.viewCount)} views •{" "}
             {formatDistanceToNow(new Date(video.createdAt), { addSuffix: true })}
           </p>
@@ -108,7 +108,7 @@ export function VideoCard({ video, layout = "vertical" }: VideoCardProps) {
   return (
     <div className="group cursor-pointer">
       <Link href={`/watch/${video.id}`}>
-        <div className="relative aspect-video overflow-hidden rounded-xl bg-gray-200">
+        <div className="relative aspect-video overflow-hidden rounded-xl bg-gray-200 dark:bg-gray-800">
           {video.thumbnailUrl ? (
             <img
               src={video.thumbnailUrl}
@@ -131,7 +131,7 @@ export function VideoCard({ video, layout = "vertical" }: VideoCardProps) {
 
       <div className="mt-3 flex gap-3">
         <Link href={`/channel/${video.channel.handle}`}>
-          <div className="h-9 w-9 flex-shrink-0 overflow-hidden rounded-full bg-gray-300">
+          <div className="h-9 w-9 flex-shrink-0 overflow-hidden rounded-full bg-gray-300 dark:bg-gray-700">
             {video.channel.avatar ? (
               <img
                 src={video.channel.avatar}
@@ -139,7 +139,7 @@ export function VideoCard({ video, layout = "vertical" }: VideoCardProps) {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-sm font-medium text-gray-600">
+              <div className="flex h-full w-full items-center justify-center text-sm font-medium text-gray-600 dark:text-gray-300">
                 {video.channel.name[0]}
               </div>
             )}
@@ -148,19 +148,19 @@ export function VideoCard({ video, layout = "vertical" }: VideoCardProps) {
 
         <div className="flex-1 min-w-0">
           <Link href={`/watch/${video.id}`}>
-            <h3 className="line-clamp-2 text-sm font-medium text-gray-900 group-hover:text-blue-600">
+            <h3 className="line-clamp-2 text-sm font-medium text-gray-900 group-hover:text-blue-600 dark:text-gray-100">
               {video.title}
             </h3>
           </Link>
 
           <Link href={`/channel/${video.channel.handle}`}>
             <div className="mt-1 flex items-center">
-              <p className="text-sm text-gray-600 hover:text-gray-900">
+              <p className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200">
                 {video.channel.name}
               </p>
               {video.channel.verified && (
                 <svg
-                  className="ml-1 h-3.5 w-3.5 text-gray-600"
+                  className="ml-1 h-3.5 w-3.5 text-gray-600 dark:text-gray-400"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
@@ -170,7 +170,7 @@ export function VideoCard({ video, layout = "vertical" }: VideoCardProps) {
             </div>
           </Link>
 
-          <p className="mt-0.5 text-sm text-gray-600">
+          <p className="mt-0.5 text-sm text-gray-600 dark:text-gray-400">
             {formatViews(video.viewCount)} views •{" "}
             {formatDistanceToNow(new Date(video.createdAt), { addSuffix: true })}
           </p>

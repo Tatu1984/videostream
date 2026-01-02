@@ -32,7 +32,7 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="fixed left-0 top-14 z-10 h-[calc(100vh-3.5rem)] w-64 overflow-y-auto border-r border-gray-200 bg-white">
+    <aside className="fixed left-0 top-14 z-10 h-[calc(100vh-3.5rem)] w-64 overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-[#0f0f0f]">
       <nav className="flex flex-col space-y-6 p-3">
         <div>
           {mainLinks.map((link) => {
@@ -45,8 +45,8 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center space-x-4 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-gray-100 text-gray-900"
-                    : "text-gray-700 hover:bg-gray-50"
+                    ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white"
+                    : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800"
                 )}
               >
                 <Icon className="h-5 w-5" />
@@ -56,7 +56,7 @@ export function Sidebar() {
           })}
         </div>
 
-        <div className="border-t border-gray-200 pt-4">
+        <div className="border-t border-gray-200 pt-4 dark:border-gray-800">
           {libraryLinks.map((link) => {
             const Icon = link.icon
             const isActive = pathname === link.href
@@ -67,8 +67,8 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center space-x-4 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-gray-100 text-gray-900"
-                    : "text-gray-700 hover:bg-gray-50"
+                    ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white"
+                    : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800"
                 )}
               >
                 <Icon className="h-5 w-5" />

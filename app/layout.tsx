@@ -30,12 +30,12 @@ export default async function RootLayout({
   const isAuthPage = false // We'll handle this better later
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <div className="min-h-screen bg-gray-50">
+          <div className="min-h-screen bg-gray-50 dark:bg-[#0f0f0f]">
             <Header user={session?.user} />
             <div className="flex pt-14">
               <Sidebar />

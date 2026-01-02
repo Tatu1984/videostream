@@ -35,8 +35,8 @@ export default async function HomePage() {
             key={category}
             className={`flex-shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
               category === "All"
-                ? "bg-gray-900 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             }`}
           >
             {category}
@@ -54,8 +54,8 @@ export default async function HomePage() {
       ) : (
         <div className="flex h-64 items-center justify-center">
           <div className="text-center">
-            <p className="text-lg font-medium text-gray-900">No videos yet</p>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="text-lg font-medium text-gray-900 dark:text-gray-100">No videos yet</p>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Check back later for new content
             </p>
           </div>
