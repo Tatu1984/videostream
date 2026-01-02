@@ -17,6 +17,12 @@ const signinSchema = z.object({
 
 type SigninFormData = z.infer<typeof signinSchema>
 
+const demoAccounts = [
+  { role: "Super Admin", email: "admin@metube.com", password: "admin123", color: "bg-red-100 text-red-800 border-red-200" },
+  { role: "Creator", email: "creator@metube.com", password: "creator123", color: "bg-blue-100 text-blue-800 border-blue-200" },
+  { role: "User", email: "user@metube.com", password: "user123", color: "bg-green-100 text-green-800 border-green-200" },
+]
+
 export function SigninForm() {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
@@ -25,10 +31,16 @@ export function SigninForm() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<SigninFormData>({
     resolver: zodResolver(signinSchema),
   })
+
+  const fillDemoCredentials = (email: string, password: string) => {
+    setValue("email", email)
+    setValue("password", password)
+  }
 
   const onSubmit = async (data: SigninFormData) => {
     try {
@@ -67,6 +79,26 @@ export function SigninForm() {
       <div className="text-center">
         <h1 className="text-3xl font-bold">Sign in to MeTube</h1>
         <p className="mt-2 text-gray-600">Welcome back</p>
+      </div>
+
+      {/* Demo Credentials */}
+      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+        <p className="mb-3 text-center text-sm font-medium text-gray-700">Demo Accounts (click to fill)</p>
+        <div className="space-y-2">
+          {demoAccounts.map((account) => (
+            <button
+              key={account.email}
+              type="button"
+              onClick={() => fillDemoCredentials(account.email, account.password)}
+              className={`w-full rounded-lg border p-2 text-left text-sm transition-all hover:shadow-md ${account.color}`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-semibold">{account.role}</span>
+                <span className="text-xs opacity-75">{account.email}</span>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
 
       {error && (
