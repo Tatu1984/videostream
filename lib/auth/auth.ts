@@ -25,19 +25,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       return session
     },
-    async jwt({ token }) {
-      if (!token.sub) return token
-
-      const existingUser = await prisma.user.findUnique({
-        where: { id: token.sub },
-      })
-
-      if (!existingUser) return token
-
-      token.name = existingUser.name
-      token.email = existingUser.email
-      token.picture = existingUser.image
-      token.role = existingUser.role
+    async jwt({ token, user }) {
+      // Only fetch user data on initial sign-in (when user is provided)
+      // This avoids Prisma calls on subsequent requests (important for Edge Runtime)
+      if (user) {
+        token.sub = user.id
+        token.name = user.name
+        token.email = user.email
+        token.picture = user.image
+        token.role = (user as any).role
+      }
 
       return token
     },

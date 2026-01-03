@@ -10,7 +10,7 @@ async function main() {
   const adminPassword = await bcrypt.hash("admin123", 10)
   const admin = await prisma.user.upsert({
     where: { email: "admin@metube.com" },
-    update: {},
+    update: { password: adminPassword, role: "ADMIN" },
     create: {
       email: "admin@metube.com",
       name: "Super Admin",
@@ -21,13 +21,13 @@ async function main() {
       emailVerified: new Date(),
     },
   })
-  console.log("Created admin:", admin.email)
+  console.log("Created/updated admin:", admin.email)
 
   // Create Demo Creator
   const creatorPassword = await bcrypt.hash("creator123", 10)
   const creator = await prisma.user.upsert({
     where: { email: "creator@metube.com" },
-    update: {},
+    update: { password: creatorPassword, role: "CREATOR" },
     create: {
       email: "creator@metube.com",
       name: "Demo Creator",
@@ -60,7 +60,7 @@ async function main() {
   const userPassword = await bcrypt.hash("user123", 10)
   const user = await prisma.user.upsert({
     where: { email: "user@metube.com" },
-    update: {},
+    update: { password: userPassword, role: "USER" },
     create: {
       email: "user@metube.com",
       name: "Demo User",
@@ -71,7 +71,7 @@ async function main() {
       emailVerified: new Date(),
     },
   })
-  console.log("Created user:", user.email)
+  console.log("Created/updated user:", user.email)
 
   console.log("\n=== Demo Credentials ===")
   console.log("Super Admin: admin@metube.com / admin123")
