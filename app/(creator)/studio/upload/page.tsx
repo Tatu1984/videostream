@@ -36,6 +36,11 @@ export default function UploadPage() {
   const [description, setDescription] = useState("")
   const [visibility, setVisibility] = useState("PRIVATE")
   const [videoType, setVideoType] = useState("STANDARD")
+  const [tags, setTags] = useState("")
+  const [category, setCategory] = useState("")
+  const [schedulePublish, setSchedulePublish] = useState(false)
+  const [scheduledDate, setScheduledDate] = useState("")
+  const [scheduledTime, setScheduledTime] = useState("")
 
   // Upload state
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>("idle")
@@ -178,6 +183,16 @@ export default function UploadPage() {
       formData.append("channelId", selectedChannel)
       formData.append("visibility", visibility)
       formData.append("videoType", videoType)
+      if (tags.trim()) {
+        formData.append("tags", tags)
+      }
+      if (category) {
+        formData.append("category", category)
+      }
+      if (schedulePublish && scheduledDate && scheduledTime) {
+        const scheduledFor = new Date(`${scheduledDate}T${scheduledTime}`)
+        formData.append("scheduledFor", scheduledFor.toISOString())
+      }
 
       // Upload video using XMLHttpRequest for progress tracking
       const xhr = new XMLHttpRequest()
@@ -251,8 +266,8 @@ export default function UploadPage() {
     return (
       <div className="flex h-[60vh] items-center justify-center">
         <div className="text-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600 mx-auto" />
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600 mx-auto dark:border-gray-600 dark:border-t-blue-500" />
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
         </div>
       </div>
     )
@@ -262,9 +277,9 @@ export default function UploadPage() {
   if (channels.length === 0) {
     return (
       <div className="flex h-[60vh] flex-col items-center justify-center">
-        <Film className="h-16 w-16 text-gray-300 mb-4" />
-        <h2 className="text-xl font-semibold">No channel found</h2>
-        <p className="mt-2 text-gray-600">You need to create a channel before uploading videos</p>
+        <Film className="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" />
+        <h2 className="text-xl font-semibold dark:text-gray-100">No channel found</h2>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">You need to create a channel before uploading videos</p>
         <Button className="mt-4" onClick={() => router.push("/studio/channel/new")}>
           Create Channel
         </Button>
@@ -273,23 +288,23 @@ export default function UploadPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0f0f0f] p-6">
       <div className="mx-auto max-w-4xl">
-        <h1 className="mb-8 text-3xl font-bold">Upload Video</h1>
+        <h1 className="mb-8 text-3xl font-bold dark:text-gray-100">Upload Video</h1>
 
         {/* Success State */}
         {uploadStatus === "success" && (
-          <div className="mb-6 rounded-lg border border-green-200 bg-green-50 p-6 text-center">
+          <div className="mb-6 rounded-lg border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20 p-6 text-center">
             <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
-            <h2 className="mt-4 text-xl font-semibold text-green-900">Upload Complete!</h2>
-            <p className="mt-2 text-green-700">Your video has been uploaded successfully.</p>
-            <p className="mt-1 text-sm text-green-600">Redirecting to your videos...</p>
+            <h2 className="mt-4 text-xl font-semibold text-green-900 dark:text-green-400">Upload Complete!</h2>
+            <p className="mt-2 text-green-700 dark:text-green-300">Your video has been uploaded successfully.</p>
+            <p className="mt-1 text-sm text-green-600 dark:text-green-400">Redirecting to your videos...</p>
           </div>
         )}
 
         {/* Error Message */}
         {errorMessage && (
-          <div className="mb-6 flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          <div className="mb-6 flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 p-4 text-red-700 dark:text-red-400">
             <AlertCircle className="h-5 w-5 flex-shrink-0" />
             <p>{errorMessage}</p>
           </div>
@@ -297,16 +312,16 @@ export default function UploadPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Video Upload Area */}
-          <div className="rounded-lg border border-gray-200 bg-white p-8">
-            <h2 className="mb-4 text-lg font-semibold">Video File</h2>
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1f1f1f] p-8">
+            <h2 className="mb-4 text-lg font-semibold dark:text-gray-100">Video File</h2>
 
             {!videoFile ? (
-              <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-12 transition-colors hover:border-blue-500 hover:bg-blue-50">
-                <UploadIcon className="mb-4 h-12 w-12 text-gray-400" />
-                <span className="mb-2 text-sm font-medium text-gray-700">
+              <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-[#282828] p-12 transition-colors hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                <UploadIcon className="mb-4 h-12 w-12 text-gray-400 dark:text-gray-500" />
+                <span className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Click to upload or drag and drop
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-500 dark:text-gray-400">
                   MP4, WebM, MOV, AVI, MKV up to 500MB
                 </span>
                 <input
@@ -342,20 +357,20 @@ export default function UploadPage() {
 
                 {/* File Info */}
                 <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-gray-700">{videoFile.name}</span>
-                  <span className="text-gray-500">{formatFileSize(videoFile.size)}</span>
+                  <span className="font-medium text-gray-700 dark:text-gray-300">{videoFile.name}</span>
+                  <span className="text-gray-500 dark:text-gray-400">{formatFileSize(videoFile.size)}</span>
                 </div>
 
                 {/* Upload Progress */}
                 {(uploadStatus === "uploading" || uploadStatus === "processing") && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">
+                      <span className="text-gray-600 dark:text-gray-400">
                         {uploadStatus === "uploading" ? "Uploading..." : "Processing..."}
                       </span>
-                      <span className="font-medium">{uploadProgress}%</span>
+                      <span className="font-medium dark:text-gray-200">{uploadProgress}%</span>
                     </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                       <div
                         className="h-full rounded-full bg-blue-600 transition-all duration-300"
                         style={{ width: `${uploadProgress}%` }}
@@ -368,17 +383,17 @@ export default function UploadPage() {
           </div>
 
           {/* Thumbnail Upload */}
-          <div className="rounded-lg border border-gray-200 bg-white p-6">
-            <h2 className="mb-4 text-lg font-semibold">Thumbnail (Optional)</h2>
-            <p className="mb-4 text-sm text-gray-600">
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1f1f1f] p-6">
+            <h2 className="mb-4 text-lg font-semibold dark:text-gray-100">Thumbnail (Optional)</h2>
+            <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
               Upload a custom thumbnail or one will be auto-generated
             </p>
 
             <div className="flex gap-4">
               {!thumbnailFile ? (
-                <label className="flex h-32 w-56 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 transition-colors hover:border-blue-500 hover:bg-blue-50">
-                  <Image className="mb-2 h-8 w-8 text-gray-400" />
-                  <span className="text-xs text-gray-500">Upload thumbnail</span>
+                <label className="flex h-32 w-56 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-[#282828] transition-colors hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                  <Image className="mb-2 h-8 w-8 text-gray-400 dark:text-gray-500" />
+                  <span className="text-xs text-gray-500 dark:text-gray-400">Upload thumbnail</span>
                   <input
                     ref={thumbnailInputRef}
                     type="file"
@@ -412,19 +427,19 @@ export default function UploadPage() {
           </div>
 
           {/* Video Details */}
-          <div className="rounded-lg border border-gray-200 bg-white p-6">
-            <h2 className="mb-4 text-lg font-semibold">Video Details</h2>
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1f1f1f] p-6">
+            <h2 className="mb-4 text-lg font-semibold dark:text-gray-100">Video Details</h2>
 
             <div className="space-y-4">
               {/* Channel Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Channel *
                 </label>
                 <select
                   value={selectedChannel}
                   onChange={(e) => setSelectedChannel(e.target.value)}
-                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#121212] px-3 py-2 text-sm dark:text-gray-100 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
                   disabled={uploadStatus === "uploading" || uploadStatus === "processing"}
                 >
                   {channels.map((channel) => (
@@ -437,7 +452,7 @@ export default function UploadPage() {
 
               {/* Title */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Title *
                 </label>
                 <Input
@@ -450,12 +465,12 @@ export default function UploadPage() {
                   required
                   disabled={uploadStatus === "uploading" || uploadStatus === "processing"}
                 />
-                <p className="mt-1 text-xs text-gray-500">{title.length}/100</p>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{title.length}/100</p>
               </div>
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Description
                 </label>
                 <textarea
@@ -464,24 +479,71 @@ export default function UploadPage() {
                   placeholder="Tell viewers about your video"
                   maxLength={5000}
                   rows={5}
-                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#121212] px-3 py-2 text-sm dark:text-gray-100 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
                   disabled={uploadStatus === "uploading" || uploadStatus === "processing"}
                 />
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   {description.length}/5000
                 </p>
+              </div>
+
+              {/* Tags */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Tags
+                </label>
+                <Input
+                  type="text"
+                  value={tags}
+                  onChange={(e) => setTags(e.target.value)}
+                  placeholder="gaming, tutorial, music (comma-separated)"
+                  className="mt-1"
+                  disabled={uploadStatus === "uploading" || uploadStatus === "processing"}
+                />
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Add tags separated by commas to help viewers find your video
+                </p>
+              </div>
+
+              {/* Category */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Category
+                </label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#121212] px-3 py-2 text-sm dark:text-gray-100 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  disabled={uploadStatus === "uploading" || uploadStatus === "processing"}
+                >
+                  <option value="">Select a category</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Music">Music</option>
+                  <option value="Gaming">Gaming</option>
+                  <option value="Education">Education</option>
+                  <option value="Science & Technology">Science & Technology</option>
+                  <option value="Sports">Sports</option>
+                  <option value="News & Politics">News & Politics</option>
+                  <option value="Howto & Style">Howto & Style</option>
+                  <option value="People & Blogs">People & Blogs</option>
+                  <option value="Comedy">Comedy</option>
+                  <option value="Film & Animation">Film & Animation</option>
+                  <option value="Autos & Vehicles">Autos & Vehicles</option>
+                  <option value="Pets & Animals">Pets & Animals</option>
+                  <option value="Travel & Events">Travel & Events</option>
+                </select>
               </div>
 
               {/* Visibility & Type Row */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Visibility
                   </label>
                   <select
                     value={visibility}
                     onChange={(e) => setVisibility(e.target.value)}
-                    className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#121212] px-3 py-2 text-sm dark:text-gray-100 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
                     disabled={uploadStatus === "uploading" || uploadStatus === "processing"}
                   >
                     <option value="PRIVATE">Private</option>
@@ -491,19 +553,71 @@ export default function UploadPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Video Type
                   </label>
                   <select
                     value={videoType}
                     onChange={(e) => setVideoType(e.target.value)}
-                    className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#121212] px-3 py-2 text-sm dark:text-gray-100 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
                     disabled={uploadStatus === "uploading" || uploadStatus === "processing"}
                   >
                     <option value="STANDARD">Standard Video</option>
                     <option value="SHORT">Short (Vertical)</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Schedule Publishing */}
+              <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#282828] p-4">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="schedulePublish"
+                    checked={schedulePublish}
+                    onChange={(e) => setSchedulePublish(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
+                    disabled={uploadStatus === "uploading" || uploadStatus === "processing"}
+                  />
+                  <label htmlFor="schedulePublish" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Schedule video for later
+                  </label>
+                </div>
+
+                {schedulePublish && (
+                  <div className="mt-4 grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Date
+                      </label>
+                      <input
+                        type="date"
+                        value={scheduledDate}
+                        onChange={(e) => setScheduledDate(e.target.value)}
+                        min={new Date().toISOString().split("T")[0]}
+                        className="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#121212] px-3 py-2 text-sm dark:text-gray-100 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                        disabled={uploadStatus === "uploading" || uploadStatus === "processing"}
+                        required={schedulePublish}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Time
+                      </label>
+                      <input
+                        type="time"
+                        value={scheduledTime}
+                        onChange={(e) => setScheduledTime(e.target.value)}
+                        className="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#121212] px-3 py-2 text-sm dark:text-gray-100 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                        disabled={uploadStatus === "uploading" || uploadStatus === "processing"}
+                        required={schedulePublish}
+                      />
+                    </div>
+                    <p className="col-span-2 text-xs text-gray-500 dark:text-gray-400">
+                      Your video will be automatically published at the scheduled time
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

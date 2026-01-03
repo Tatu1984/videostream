@@ -26,7 +26,7 @@ export default async function SearchPage({
     return (
       <div className="flex h-64 flex-col items-center justify-center">
         <svg
-          className="mb-4 h-24 w-24 text-gray-300"
+          className="mb-4 h-24 w-24 text-gray-300 dark:text-gray-600"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -38,8 +38,8 @@ export default async function SearchPage({
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
-        <h2 className="text-xl font-medium text-gray-900">Start searching</h2>
-        <p className="mt-1 text-gray-600">Find videos, channels, and playlists</p>
+        <h2 className="text-xl font-medium text-gray-900 dark:text-gray-100">Start searching</h2>
+        <p className="mt-1 text-gray-600 dark:text-gray-400">Find videos, channels, and playlists</p>
       </div>
     )
   }
@@ -196,7 +196,7 @@ export default async function SearchPage({
   return (
     <div>
       {/* Sticky Search Bar */}
-      <div className="sticky top-0 z-10 -mx-6 bg-white px-6 py-4 shadow-sm">
+      <div className="sticky top-0 z-10 -mx-6 bg-white dark:bg-[#0f0f0f] px-6 py-4 shadow-sm dark:shadow-gray-800">
         <SearchBar initialQuery={query} />
       </div>
 
@@ -205,8 +205,8 @@ export default async function SearchPage({
 
       {/* Results summary */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Search results for "{query}"</h1>
-        <p className="mt-1 text-sm text-gray-600">
+        <h1 className="text-2xl font-bold dark:text-gray-100">Search results for "{query}"</h1>
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
           {videos.length} videos
           {showChannels && channels.length > 0 && ` • ${channels.length} channels`}
           {showPlaylists && playlists.length > 0 && ` • ${playlists.length} playlists`}
@@ -216,7 +216,7 @@ export default async function SearchPage({
       {/* Top results section (only when showing all) */}
       {showAll && topResults.length > 0 && (
         <div className="mb-8">
-          <h2 className="mb-4 text-lg font-semibold">Top results</h2>
+          <h2 className="mb-4 text-lg font-semibold dark:text-gray-100">Top results</h2>
           <div className="space-y-4">
             {topResults.map((item) => {
               // Check if it's a channel or video
@@ -227,9 +227,9 @@ export default async function SearchPage({
                   <Link
                     key={`channel-${channel.id}`}
                     href={`/channel/${channel.handle}`}
-                    className="flex items-center gap-4 rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50"
+                    className="flex items-center gap-4 rounded-lg border border-gray-200 dark:border-gray-700 p-4 transition-colors hover:bg-gray-50 dark:hover:bg-[#1f1f1f]"
                   >
-                    <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-full bg-gray-300">
+                    <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-full bg-gray-300 dark:bg-gray-700">
                       {channel.avatar ? (
                         <img
                           src={channel.avatar}
@@ -237,14 +237,14 @@ export default async function SearchPage({
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center text-2xl font-medium text-gray-600">
+                        <div className="flex h-full w-full items-center justify-center text-2xl font-medium text-gray-600 dark:text-gray-400">
                           {channel.name[0]}
                         </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center">
-                        <h3 className="font-medium text-gray-900">{channel.name}</h3>
+                        <h3 className="font-medium text-gray-900 dark:text-gray-100">{channel.name}</h3>
                         {channel.verified && (
                           <svg
                             className="ml-1 h-4 w-4 text-gray-600"
@@ -255,13 +255,13 @@ export default async function SearchPage({
                           </svg>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600">@{channel.handle}</p>
-                      <p className="mt-1 text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">@{channel.handle}</p>
+                      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                         {channel.subscriberCount.toLocaleString()} subscribers •{" "}
                         {channel.videoCount} videos
                       </p>
                     </div>
-                    <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+                    <span className="rounded-full bg-gray-100 dark:bg-gray-700 px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-300">
                       Channel
                     </span>
                   </Link>
@@ -273,9 +273,9 @@ export default async function SearchPage({
                   <Link
                     key={`video-${video.id}`}
                     href={`/watch/${video.id}`}
-                    className="flex gap-4 rounded-lg transition-colors hover:bg-gray-50"
+                    className="flex gap-4 rounded-lg transition-colors hover:bg-gray-50 dark:hover:bg-[#1f1f1f]"
                   >
-                    <div className="relative aspect-video w-60 flex-shrink-0 overflow-hidden rounded-xl bg-gray-200">
+                    <div className="relative aspect-video w-60 flex-shrink-0 overflow-hidden rounded-xl bg-gray-200 dark:bg-gray-700">
                       {video.thumbnailUrl ? (
                         <img
                           src={video.thumbnailUrl}
@@ -295,14 +295,14 @@ export default async function SearchPage({
                       )}
                     </div>
                     <div className="flex-1 py-1">
-                      <h3 className="line-clamp-2 text-base font-medium text-gray-900">
+                      <h3 className="line-clamp-2 text-base font-medium text-gray-900 dark:text-gray-100">
                         {video.title}
                       </h3>
-                      <p className="mt-1 text-sm text-gray-600">
+                      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                         {Number(video.viewCount).toLocaleString()} views
                       </p>
                       <div className="mt-2 flex items-center gap-2">
-                        <div className="h-6 w-6 overflow-hidden rounded-full bg-gray-300">
+                        <div className="h-6 w-6 overflow-hidden rounded-full bg-gray-300 dark:bg-gray-600">
                           {video.channel.avatar ? (
                             <img
                               src={video.channel.avatar}
@@ -310,12 +310,12 @@ export default async function SearchPage({
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <div className="flex h-full w-full items-center justify-center text-xs font-medium text-gray-600">
+                            <div className="flex h-full w-full items-center justify-center text-xs font-medium text-gray-600 dark:text-gray-400">
                               {video.channel.name[0]}
                             </div>
                           )}
                         </div>
-                        <span className="text-sm text-gray-600">{video.channel.name}</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">{video.channel.name}</span>
                       </div>
                     </div>
                   </Link>
@@ -329,15 +329,15 @@ export default async function SearchPage({
       {/* Channels results */}
       {showChannels && channels.length > 0 && (
         <div className="mb-8">
-          <h2 className="mb-4 text-lg font-semibold">Channels</h2>
+          <h2 className="mb-4 text-lg font-semibold dark:text-gray-100">Channels</h2>
           <div className="space-y-4">
             {channels.map((channel) => (
               <Link
                 key={channel.id}
                 href={`/channel/${channel.handle}`}
-                className="flex items-center gap-4 rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50"
+                className="flex items-center gap-4 rounded-lg border border-gray-200 dark:border-gray-700 p-4 transition-colors hover:bg-gray-50 dark:hover:bg-[#1f1f1f]"
               >
-                <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-full bg-gray-300">
+                <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-full bg-gray-300 dark:bg-gray-700">
                   {channel.avatar ? (
                     <img
                       src={channel.avatar}
@@ -345,7 +345,7 @@ export default async function SearchPage({
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-2xl font-medium text-gray-600">
+                    <div className="flex h-full w-full items-center justify-center text-2xl font-medium text-gray-600 dark:text-gray-400">
                       {channel.name[0]}
                     </div>
                   )}
@@ -353,7 +353,7 @@ export default async function SearchPage({
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center">
-                    <h3 className="font-medium text-gray-900">{channel.name}</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100">{channel.name}</h3>
                     {channel.verified && (
                       <svg
                         className="ml-1 h-4 w-4 text-gray-600"
@@ -364,13 +364,13 @@ export default async function SearchPage({
                       </svg>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600">@{channel.handle}</p>
-                  <p className="mt-1 text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">@{channel.handle}</p>
+                  <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                     {channel.subscriberCount.toLocaleString()} subscribers •{" "}
                     {channel.videoCount} videos
                   </p>
                   {channel.description && (
-                    <p className="mt-1 line-clamp-2 text-sm text-gray-500">
+                    <p className="mt-1 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
                       {channel.description}
                     </p>
                   )}
@@ -384,16 +384,16 @@ export default async function SearchPage({
       {/* Playlists results */}
       {showPlaylists && playlists.length > 0 && (
         <div className="mb-8">
-          <h2 className="mb-4 text-lg font-semibold">Playlists</h2>
+          <h2 className="mb-4 text-lg font-semibold dark:text-gray-100">Playlists</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {playlists.map((playlist) => (
               <Link
                 key={playlist.id}
                 href={`/playlist/${playlist.id}`}
-                className="group rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50"
+                className="group rounded-lg border border-gray-200 dark:border-gray-700 p-4 transition-colors hover:bg-gray-50 dark:hover:bg-[#1f1f1f]"
               >
                 <div className="mb-3 flex items-start justify-between">
-                  <div className="rounded bg-blue-100 p-2">
+                  <div className="rounded bg-blue-100 dark:bg-blue-900/30 p-2">
                     <svg
                       className="h-6 w-6 text-blue-600"
                       fill="none"
@@ -408,15 +408,15 @@ export default async function SearchPage({
                       />
                     </svg>
                   </div>
-                  <span className="text-xs font-medium text-gray-600">
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
                     {playlist.videoCount} videos
                   </span>
                 </div>
-                <h3 className="line-clamp-2 font-medium text-gray-900 group-hover:text-blue-600">
+                <h3 className="line-clamp-2 font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600">
                   {playlist.title}
                 </h3>
                 {playlist.description && (
-                  <p className="mt-1 line-clamp-2 text-sm text-gray-600">
+                  <p className="mt-1 line-clamp-2 text-sm text-gray-600 dark:text-gray-400">
                     {playlist.description}
                   </p>
                 )}
@@ -428,7 +428,7 @@ export default async function SearchPage({
                       className="h-5 w-5 rounded-full object-cover"
                     />
                   )}
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
                     by {playlist.user.name || "Unknown"}
                   </span>
                 </div>
@@ -441,7 +441,7 @@ export default async function SearchPage({
       {/* Videos results */}
       {showVideos && (
         <div>
-          <h2 className="mb-4 text-lg font-semibold">Videos</h2>
+          <h2 className="mb-4 text-lg font-semibold dark:text-gray-100">Videos</h2>
           {videos.length > 0 ? (
             <div className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {videos.map((video) => (
@@ -449,8 +449,8 @@ export default async function SearchPage({
               ))}
             </div>
           ) : (
-            <div className="flex h-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-200">
-              <p className="text-gray-600">No videos found</p>
+            <div className="flex h-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-700">
+              <p className="text-gray-600 dark:text-gray-400">No videos found</p>
             </div>
           )}
         </div>
@@ -460,7 +460,7 @@ export default async function SearchPage({
       {videos.length === 0 && channels.length === 0 && playlists.length === 0 && (
         <div className="flex h-64 flex-col items-center justify-center">
           <svg
-            className="mb-4 h-24 w-24 text-gray-300"
+            className="mb-4 h-24 w-24 text-gray-300 dark:text-gray-600"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -472,8 +472,8 @@ export default async function SearchPage({
               d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <h2 className="text-xl font-medium text-gray-900">No results found</h2>
-          <p className="mt-1 text-gray-600">
+          <h2 className="text-xl font-medium text-gray-900 dark:text-gray-100">No results found</h2>
+          <p className="mt-1 text-gray-600 dark:text-gray-400">
             Try different keywords or remove search filters
           </p>
         </div>

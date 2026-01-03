@@ -44,8 +44,8 @@ export default async function LibraryPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Library</h1>
-        <p className="mt-1 text-gray-600">
+        <h1 className="text-3xl font-bold dark:text-gray-100">Library</h1>
+        <p className="mt-1 text-gray-600 dark:text-gray-400">
           Your personal collection
         </p>
       </div>
@@ -57,15 +57,15 @@ export default async function LibraryPage() {
             <Link
               key={section.href}
               href={section.href}
-              className="group rounded-lg border border-gray-200 bg-white p-6 transition-all hover:border-blue-300 hover:shadow-md"
+              className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1f1f1f] p-6 transition-all hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md"
             >
               <div className={`inline-flex rounded-lg p-3 ${section.color}`}>
                 <Icon className="h-6 w-6" />
               </div>
-              <h3 className="mt-4 font-semibold text-gray-900 group-hover:text-blue-600">
+              <h3 className="mt-4 font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600">
                 {section.title}
               </h3>
-              <p className="mt-1 text-sm text-gray-600">
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                 {section.description}
               </p>
             </Link>

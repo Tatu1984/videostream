@@ -77,7 +77,7 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800">
+    <aside className="fixed left-0 top-0 z-40 h-screen w-64 bg-white dark:bg-[#0f0f0f] border-r border-gray-100 dark:border-gray-800">
       {/* Logo */}
       <div className="flex h-16 items-center gap-3 px-6">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FF6B8A]">

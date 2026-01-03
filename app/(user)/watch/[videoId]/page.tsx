@@ -53,13 +53,7 @@ export default async function WatchPage({
     notFound()
   }
 
-  // Increment view count
-  await prisma.video.update({
-    where: { id: videoId },
-    data: { viewCount: { increment: 1 } },
-  })
-
-  // Record watch history if user is logged in
+  // Record watch history if user is logged in (view count is handled by client-side API call)
   if (session?.user?.id) {
     await prisma.watchHistory.upsert({
       where: {
@@ -110,16 +104,17 @@ export default async function WatchPage({
           src={videoSource}
           poster={video.thumbnailUrl || undefined}
           title={video.title}
+          videoId={video.id}
         />
 
         {/* Video info */}
         <div className="mt-4">
-          <h1 className="text-xl font-bold text-gray-900">{video.title}</h1>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{video.title}</h1>
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
-                <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-300">
+                <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-300 dark:bg-gray-700">
                   {video.channel.avatar ? (
                     <img
                       src={video.channel.avatar}
@@ -127,7 +122,7 @@ export default async function WatchPage({
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center font-medium text-gray-600">
+                    <div className="flex h-full w-full items-center justify-center font-medium text-gray-600 dark:text-gray-400">
                       {video.channel.name[0]}
                     </div>
                   )}
@@ -137,7 +132,7 @@ export default async function WatchPage({
                   <div className="flex items-center">
                     <a
                       href={`/channel/${video.channel.id}`}
-                      className="font-medium text-gray-900 hover:text-gray-700"
+                      className="font-medium text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300"
                     >
                       {video.channel.name}
                     </a>
@@ -151,7 +146,7 @@ export default async function WatchPage({
                       </svg>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     {formatViews(BigInt(video.channel.subscriberCount))} subscribers
                   </p>
                 </div>
@@ -177,8 +172,8 @@ export default async function WatchPage({
           </div>
 
           {/* Description */}
-          <div className="mt-4 rounded-lg bg-gray-100 p-4">
-            <div className="flex items-center space-x-2 text-sm font-medium text-gray-900">
+          <div className="mt-4 rounded-lg bg-gray-100 dark:bg-[#1f1f1f] p-4">
+            <div className="flex items-center space-x-2 text-sm font-medium text-gray-900 dark:text-gray-100">
               <span>{formatViews(video.viewCount)} views</span>
               <span>•</span>
               <span>
@@ -189,7 +184,7 @@ export default async function WatchPage({
             </div>
 
             {video.description && (
-              <p className="mt-2 whitespace-pre-wrap text-sm text-gray-700">
+              <p className="mt-2 whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300">
                 {video.description}
               </p>
             )}
@@ -200,7 +195,7 @@ export default async function WatchPage({
                   <a
                     key={tag}
                     href={`/search?q=${encodeURIComponent(tag)}`}
-                    className="text-sm text-blue-600 hover:text-blue-700"
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                   >
                     #{tag}
                   </a>
@@ -211,15 +206,15 @@ export default async function WatchPage({
 
           {/* Chapters */}
           {video.chapters && video.chapters.length > 0 && (
-            <div className="mt-4 rounded-lg border p-4">
-              <h3 className="mb-3 font-medium">Chapters</h3>
+            <div className="mt-4 rounded-lg border dark:border-gray-700 p-4">
+              <h3 className="mb-3 font-medium dark:text-gray-100">Chapters</h3>
               <div className="space-y-2">
                 {video.chapters.map((chapter) => (
                   <div
                     key={chapter.id}
-                    className="flex items-center gap-3 text-sm"
+                    className="flex items-center gap-3 text-sm dark:text-gray-300"
                   >
-                    <span className="font-mono text-blue-600">
+                    <span className="font-mono text-blue-600 dark:text-blue-400">
                       {Math.floor(chapter.timestamp / 60)}:
                       {(chapter.timestamp % 60).toString().padStart(2, "0")}
                     </span>
@@ -241,7 +236,7 @@ export default async function WatchPage({
 
       {/* Sidebar - Suggested videos */}
       <div className="space-y-4">
-        <h3 className="font-medium text-gray-900">Up next</h3>
+        <h3 className="font-medium text-gray-900 dark:text-gray-100">Up next</h3>
         {suggestedVideos.map((suggestedVideo) => (
           <VideoCard key={suggestedVideo.id} video={suggestedVideo} layout="horizontal" />
         ))}

@@ -198,9 +198,16 @@ export default function AccountSettingsPage() {
 
   return (
     <div className="space-y-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold dark:text-white">Account Settings</h1>
+        <p className="mt-1 text-gray-600 dark:text-gray-400">Manage your account settings and preferences</p>
+      </div>
+
       {message && (
         <div className={`flex items-center gap-2 rounded-lg p-4 ${
-          message.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+          message.type === "success"
+            ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+            : "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400"
         }`}>
           {message.type === "success" ? <CheckCircle className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
           {message.text}
@@ -209,14 +216,14 @@ export default function AccountSettingsPage() {
 
       {/* Profile Information */}
       <Card className="p-6">
-        <h2 className="mb-4 text-xl font-semibold">Profile Information</h2>
+        <h2 className="mb-4 text-xl font-semibold dark:text-white">Profile Information</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Profile Picture
             </label>
             <div className="mt-2 flex items-center gap-4">
-              <div className="h-20 w-20 overflow-hidden rounded-full bg-gray-300">
+              <div className="h-20 w-20 overflow-hidden rounded-full bg-gray-300 dark:bg-gray-700">
                 {session?.user?.image ? (
                   <img
                     src={session.user.image}
@@ -224,7 +231,7 @@ export default function AccountSettingsPage() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-2xl font-medium text-gray-600">
+                  <div className="flex h-full w-full items-center justify-center text-2xl font-medium text-gray-600 dark:text-gray-400">
                     {formData.name?.[0] || session?.user?.email?.[0] || "U"}
                   </div>
                 )}
@@ -250,7 +257,7 @@ export default function AccountSettingsPage() {
                   )}
                   Change Photo
                 </Button>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   JPG, PNG or GIF. Max size 2MB.
                 </p>
               </div>
@@ -258,7 +265,7 @@ export default function AccountSettingsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Display Name
             </label>
             <Input
@@ -271,7 +278,7 @@ export default function AccountSettingsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Username
             </label>
             <Input
@@ -281,24 +288,24 @@ export default function AccountSettingsPage() {
               className="mt-1"
               placeholder="username"
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               Your unique username. This will be shown in your profile URL.
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Bio
             </label>
             <textarea
               value={formData.bio}
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-              className="mt-1 w-full rounded-md border border-gray-300 p-2 text-sm"
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white p-2 text-sm dark:border-gray-700 dark:bg-[#121212] dark:text-gray-100"
               rows={3}
               placeholder="Tell us about yourself..."
               maxLength={160}
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {formData.bio.length}/160 characters
             </p>
           </div>
@@ -314,10 +321,10 @@ export default function AccountSettingsPage() {
 
       {/* Contact Information */}
       <Card className="p-6">
-        <h2 className="mb-4 text-xl font-semibold">Contact Information</h2>
+        <h2 className="mb-4 text-xl font-semibold dark:text-white">Contact Information</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Email Address
             </label>
             <Input
@@ -326,13 +333,13 @@ export default function AccountSettingsPage() {
               className="mt-1"
               disabled
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               Email cannot be changed.
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Phone Number (Optional)
             </label>
             <Input
@@ -354,10 +361,10 @@ export default function AccountSettingsPage() {
 
       {/* Security */}
       <Card className="p-6">
-        <h2 className="mb-4 text-xl font-semibold">Security</h2>
+        <h2 className="mb-4 text-xl font-semibold dark:text-white">Security</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Password
             </label>
             <div className="mt-2 flex items-center gap-4">
@@ -373,13 +380,13 @@ export default function AccountSettingsPage() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-gray-200 p-4">
+          <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-medium text-gray-900">
+                <h3 className="font-medium text-gray-900 dark:text-white">
                   Two-Factor Authentication
                 </h3>
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                   Add an extra layer of security to your account
                 </p>
               </div>
@@ -392,15 +399,15 @@ export default function AccountSettingsPage() {
       </Card>
 
       {/* Danger Zone */}
-      <Card className="border-red-200 p-6">
-        <h2 className="mb-4 text-xl font-semibold text-red-600">
+      <Card className="border-red-200 p-6 dark:border-red-900">
+        <h2 className="mb-4 text-xl font-semibold text-red-600 dark:text-red-400">
           Danger Zone
         </h2>
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-900/20">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium text-red-900">Delete Account</h3>
-              <p className="mt-1 text-sm text-red-700">
+              <h3 className="font-medium text-red-900 dark:text-red-300">Delete Account</h3>
+              <p className="mt-1 text-sm text-red-700 dark:text-red-400">
                 Permanently delete your account and all associated data
               </p>
             </div>
@@ -414,17 +421,17 @@ export default function AccountSettingsPage() {
       {/* Change Password Modal */}
       {showPasswordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-md rounded-lg bg-white p-6">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 dark:bg-[#282828]">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Change Password</h2>
-              <button onClick={() => setShowPasswordModal(false)}>
+              <h2 className="text-xl font-semibold dark:text-white">Change Password</h2>
+              <button onClick={() => setShowPasswordModal(false)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                 <X className="h-6 w-6" />
               </button>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="mb-1 block text-sm font-medium">Current Password</label>
+                <label className="mb-1 block text-sm font-medium dark:text-gray-300">Current Password</label>
                 <Input
                   type="password"
                   value={passwordData.currentPassword}
@@ -434,7 +441,7 @@ export default function AccountSettingsPage() {
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium">New Password</label>
+                <label className="mb-1 block text-sm font-medium dark:text-gray-300">New Password</label>
                 <Input
                   type="password"
                   value={passwordData.newPassword}
@@ -444,7 +451,7 @@ export default function AccountSettingsPage() {
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium">Confirm New Password</label>
+                <label className="mb-1 block text-sm font-medium dark:text-gray-300">Confirm New Password</label>
                 <Input
                   type="password"
                   value={passwordData.confirmPassword}
@@ -470,24 +477,24 @@ export default function AccountSettingsPage() {
       {/* Delete Account Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-md rounded-lg bg-white p-6">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 dark:bg-[#282828]">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-red-600">Delete Account</h2>
-              <button onClick={() => setShowDeleteModal(false)}>
+              <h2 className="text-xl font-semibold text-red-600 dark:text-red-400">Delete Account</h2>
+              <button onClick={() => setShowDeleteModal(false)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                 <X className="h-6 w-6" />
               </button>
             </div>
 
             <div className="space-y-4">
-              <div className="rounded-lg bg-red-50 p-4">
-                <p className="text-sm text-red-700">
+              <div className="rounded-lg bg-red-50 p-4 dark:bg-red-900/20">
+                <p className="text-sm text-red-700 dark:text-red-400">
                   This action is permanent and cannot be undone. All your data, including
                   videos, comments, playlists, and channels will be permanently deleted.
                 </p>
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium">
+                <label className="mb-1 block text-sm font-medium dark:text-gray-300">
                   Type DELETE to confirm
                 </label>
                 <Input

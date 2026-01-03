@@ -2,7 +2,7 @@ import { SignupForm } from "@/components/auth/signup-form"
 
 export default function SignupPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-[#0f0f0f] px-4 py-12">
       <SignupForm />
     </div>
   )

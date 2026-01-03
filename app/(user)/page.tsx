@@ -1,13 +1,20 @@
 import { prisma } from "@/lib/db/prisma"
 import { VideoCard } from "@/components/user/video-card"
+import { CategoryFilter } from "@/components/user/category-filter"
+import { Suspense } from "react"
 
-const categories = ["All", "Music", "Gaming", "Sports", "News", "Education"]
+interface HomePageProps {
+  searchParams: Promise<{ category?: string }>
+}
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const { category } = await searchParams
+
   const videos = await prisma.video.findMany({
     where: {
       visibility: "PUBLIC",
       processingStatus: "COMPLETED",
+      ...(category && category !== "All" ? { category } : {}),
     },
     include: {
       channel: {
@@ -29,20 +36,9 @@ export default async function HomePage() {
   return (
     <div>
       {/* Category chips */}
-      <div className="mb-6 flex gap-3 overflow-x-auto pb-2">
-        {categories.map((category) => (
-          <button
-            key={category}
-            className={`flex-shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-              category === "All"
-                ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            }`}
-          >
-            {category}
-          </button>
-        ))}
-      </div>
+      <Suspense fallback={<div className="mb-6 h-10 animate-pulse bg-gray-200 dark:bg-gray-800 rounded-lg" />}>
+        <CategoryFilter />
+      </Suspense>
 
       {/* Video grid */}
       {videos.length > 0 ? (

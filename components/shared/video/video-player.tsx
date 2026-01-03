@@ -20,6 +20,7 @@ interface VideoPlayerProps {
   src?: string
   poster?: string
   title: string
+  videoId?: string
   qualities?: { label: string; src: string }[]
   onProgress?: (progress: number) => void
 }
@@ -28,12 +29,14 @@ export function VideoPlayer({
   src,
   poster,
   title,
+  videoId,
   qualities,
   onProgress,
 }: VideoPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
+  const viewRecordedRef = useRef(false)
 
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
@@ -50,6 +53,21 @@ export function VideoPlayer({
   const [showVolumeSlider, setShowVolumeSlider] = useState(false)
 
   const hideControlsTimeout = useRef<NodeJS.Timeout | null>(null)
+
+  // Record view when video first plays
+  const recordView = async () => {
+    if (viewRecordedRef.current || !videoId) return
+    viewRecordedRef.current = true
+
+    try {
+      await fetch(`/api/videos/${videoId}/view`, {
+        method: 'POST',
+      })
+    } catch (error) {
+      // Silently fail - view recording is not critical
+      console.error('Failed to record view:', error)
+    }
+  }
 
   // Auto-hide controls
   useEffect(() => {
@@ -280,7 +298,10 @@ export function VideoPlayer({
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onProgress={handleProgress}
-        onPlay={() => setIsPlaying(true)}
+        onPlay={() => {
+          setIsPlaying(true)
+          recordView()
+        }}
         onPause={() => setIsPlaying(false)}
         onWaiting={() => setIsBuffering(true)}
         onPlaying={() => setIsBuffering(false)}

@@ -66,8 +66,8 @@ export default async function AdminCopyrightClaimsPage({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Copyright Claims</h1>
-        <div className="text-sm text-gray-500">{total} total claims</div>
+        <h1 className="text-2xl font-bold dark:text-white">Copyright Claims</h1>
+        <div className="text-sm text-gray-500 dark:text-gray-400">{total} total claims</div>
       </div>
 
       {/* Filters */}
@@ -113,25 +113,25 @@ export default async function AdminCopyrightClaimsPage({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#1f1f1f]">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 dark:bg-gray-800">
+          <thead className="bg-gray-50 dark:bg-[#282828]">
             <tr>
-              <th className="px-4 py-3 text-left font-medium">Video</th>
-              <th className="px-4 py-3 text-left font-medium">Claimant</th>
-              <th className="px-4 py-3 text-left font-medium">Type</th>
-              <th className="px-4 py-3 text-left font-medium">Description</th>
-              <th className="px-4 py-3 text-left font-medium">Status</th>
-              <th className="px-4 py-3 text-left font-medium">Created</th>
-              <th className="px-4 py-3 text-left font-medium">Actions</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Video</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Claimant</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Type</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Description</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Status</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Created</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {claims.map((claim) => (
-              <tr key={claim.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+              <tr key={claim.id} className="hover:bg-gray-50 dark:hover:bg-[#282828] transition-colors">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="h-12 w-20 flex-shrink-0 rounded bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                    <div className="h-12 w-20 flex-shrink-0 rounded-lg bg-gray-200 dark:bg-gray-700 overflow-hidden">
                       {claim.video.thumbnailUrl ? (
                         <img
                           src={claim.video.thumbnailUrl}
@@ -145,29 +145,29 @@ export default async function AdminCopyrightClaimsPage({
                       )}
                     </div>
                     <div className="min-w-0">
-                      <div className="font-medium truncate max-w-[200px]">{claim.video.title}</div>
-                      <div className="text-gray-500 text-xs">@{claim.video.channel.handle}</div>
+                      <div className="font-medium truncate max-w-[200px] dark:text-white">{claim.video.title}</div>
+                      <div className="text-gray-500 dark:text-gray-400 text-xs">@{claim.video.channel.handle}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-4 py-3">
                   {claim.rightsHolder ? (
                     <div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 dark:text-gray-300">
                         <span>{claim.rightsHolder.name}</span>
                         {claim.rightsHolder.verified && (
                           <CheckCircle className="h-3 w-3 text-blue-500" />
                         )}
                       </div>
-                      <div className="text-xs text-gray-500">{claim.rightsHolder.email}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{claim.rightsHolder.email}</div>
                     </div>
                   ) : (
-                    <span className="text-gray-500">Manual claim</span>
+                    <span className="text-gray-500 dark:text-gray-400">Manual claim</span>
                   )}
                 </td>
                 <td className="px-4 py-3">
                   <span
-                    className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${
+                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
                       claim.claimType === "AUTOMATED"
                         ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
                         : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
@@ -183,7 +183,7 @@ export default async function AdminCopyrightClaimsPage({
                 </td>
                 <td className="px-4 py-3">
                   <span
-                    className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${
+                    className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${
                       claim.status === "PENDING"
                         ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
                         : claim.status === "UPHELD"
@@ -199,7 +199,7 @@ export default async function AdminCopyrightClaimsPage({
                     {claim.status}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-gray-500">
+                <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                   {new Date(claim.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-3">
@@ -241,18 +241,18 @@ export default async function AdminCopyrightClaimsPage({
             ))}
           </tbody>
         </table>
-      </div>
 
-      {claims.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
-          No copyright claims found
-        </div>
-      )}
+        {claims.length === 0 && (
+          <div className="py-12 text-center text-gray-500 dark:text-gray-400">
+            No copyright claims found
+          </div>
+        )}
+      </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
             Showing {(page - 1) * perPage + 1} to {Math.min(page * perPage, total)} of {total}
           </div>
           <div className="flex gap-2">

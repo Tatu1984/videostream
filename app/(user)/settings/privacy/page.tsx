@@ -44,8 +44,8 @@ export default async function PrivacySettingsPage() {
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h2 className="mb-4 text-xl font-semibold">Privacy Settings</h2>
-        <p className="text-sm text-gray-600">
+        <h2 className="mb-4 text-xl font-semibold dark:text-gray-100">Privacy Settings</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
           Control your privacy and what others can see
         </p>
       </Card>

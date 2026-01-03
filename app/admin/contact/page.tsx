@@ -43,8 +43,8 @@ export default async function AdminContactPage({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Contact Submissions</h1>
-        <div className="text-sm text-gray-500">{total} total submissions</div>
+        <h1 className="text-2xl font-bold dark:text-white">Contact Submissions</h1>
+        <div className="text-sm text-gray-500 dark:text-gray-400">{total} total submissions</div>
       </div>
 
       {/* Filters */}
@@ -90,35 +90,35 @@ export default async function AdminContactPage({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#1f1f1f]">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 dark:bg-gray-800">
+          <thead className="bg-gray-50 dark:bg-[#282828]">
             <tr>
-              <th className="px-4 py-3 text-left font-medium">Contact</th>
-              <th className="px-4 py-3 text-left font-medium">Subject</th>
-              <th className="px-4 py-3 text-left font-medium">Message</th>
-              <th className="px-4 py-3 text-left font-medium">Status</th>
-              <th className="px-4 py-3 text-left font-medium">Assigned To</th>
-              <th className="px-4 py-3 text-left font-medium">Created</th>
-              <th className="px-4 py-3 text-left font-medium">Actions</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Contact</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Subject</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Message</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Status</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Assigned To</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Created</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {submissions.map((submission) => (
-              <tr key={submission.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+              <tr key={submission.id} className="hover:bg-gray-50 dark:hover:bg-[#282828] transition-colors">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 flex-shrink-0 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                      <Mail className="h-5 w-5 text-gray-500" />
+                      <Mail className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                     </div>
                     <div>
-                      <div className="font-medium">{submission.name}</div>
-                      <div className="text-gray-500 text-xs">{submission.email}</div>
+                      <div className="font-medium dark:text-white">{submission.name}</div>
+                      <div className="text-gray-500 dark:text-gray-400 text-xs">{submission.email}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-4 py-3">
-                  <p className="font-medium truncate max-w-[200px]">{submission.subject}</p>
+                  <p className="font-medium truncate max-w-[200px] dark:text-gray-300">{submission.subject}</p>
                 </td>
                 <td className="px-4 py-3">
                   <p className="truncate max-w-[250px] text-gray-600 dark:text-gray-400">
@@ -127,14 +127,14 @@ export default async function AdminContactPage({
                 </td>
                 <td className="px-4 py-3">
                   <span
-                    className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${
+                    className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${
                       submission.status === "PENDING"
                         ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
                         : submission.status === "IN_PROGRESS"
                         ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
                         : submission.status === "RESOLVED"
                         ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                        : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
+                        : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400"
                     }`}
                   >
                     {submission.status === "PENDING" && <Clock className="h-3 w-3" />}
@@ -144,10 +144,10 @@ export default async function AdminContactPage({
                     {submission.status.replace("_", " ")}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-gray-500">
+                <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                   {submission.assignedTo || "-"}
                 </td>
-                <td className="px-4 py-3 text-gray-500">
+                <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                   {new Date(submission.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-3">
@@ -157,18 +157,18 @@ export default async function AdminContactPage({
             ))}
           </tbody>
         </table>
-      </div>
 
-      {submissions.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
-          No contact submissions found
-        </div>
-      )}
+        {submissions.length === 0 && (
+          <div className="py-12 text-center text-gray-500 dark:text-gray-400">
+            No contact submissions found
+          </div>
+        )}
+      </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
             Showing {(page - 1) * perPage + 1} to {Math.min(page * perPage, total)} of {total}
           </div>
           <div className="flex gap-2">

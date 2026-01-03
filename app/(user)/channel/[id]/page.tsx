@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db/prisma"
 import { auth } from "@/lib/auth/auth"
 import { VideoCard } from "@/components/user/video-card"
 import { SubscribeButton } from "@/components/user/subscribe-button"
-import { Bell, Users, PlaySquare, Calendar } from "lucide-react"
+import { Bell, Users, PlaySquare, Calendar, ListVideo } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import Link from "next/link"
 
@@ -74,10 +74,32 @@ export default async function ChannelPage({
     take: 10,
   })
 
+  // Get public playlists from channel owner
+  const playlists = await prisma.playlist.findMany({
+    where: {
+      userId: channel.ownerId,
+      visibility: session?.user?.id === channel.ownerId ? undefined : "PUBLIC",
+    },
+    include: {
+      videos: {
+        take: 1,
+        include: {
+          video: {
+            select: {
+              thumbnailUrl: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: { updatedAt: "desc" },
+    take: 20,
+  })
+
   const isOwner = session?.user?.id === channel.ownerId
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-[#0f0f0f]">
       {/* Banner */}
       <div className="h-32 bg-gradient-to-r from-blue-600 to-purple-600 sm:h-48">
         {channel.banner && (
@@ -121,13 +143,13 @@ export default async function ChannelPage({
                 </svg>
               )}
             </div>
-            <p className="mt-1 text-gray-600">@{channel.handle}</p>
-            <div className="mt-2 flex items-center justify-center gap-4 text-sm text-gray-600 sm:justify-start">
+            <p className="mt-1 text-gray-600 dark:text-gray-400">@{channel.handle}</p>
+            <div className="mt-2 flex items-center justify-center gap-4 text-sm text-gray-600 dark:text-gray-400 sm:justify-start">
               <span>{formatCount(channel.subscriberCount)} subscribers</span>
               <span>{channel.videoCount} videos</span>
             </div>
             {channel.description && (
-              <p className="mt-3 max-w-2xl text-sm text-gray-700">
+              <p className="mt-3 max-w-2xl text-sm text-gray-700 dark:text-gray-300">
                 {channel.description}
               </p>
             )}
@@ -148,14 +170,14 @@ export default async function ChannelPage({
         </div>
 
         {/* Tabs */}
-        <div className="border-b">
+        <div className="border-b dark:border-gray-700">
           <div className="flex gap-6">
             <Link
               href={`/channel/${id}?tab=videos`}
               className={`border-b-2 px-1 py-3 text-sm font-medium ${
                 tab === "videos"
-                  ? "border-gray-900 text-gray-900"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                  ? "border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100"
+                  : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
               }`}
             >
               Videos
@@ -164,18 +186,28 @@ export default async function ChannelPage({
               href={`/channel/${id}?tab=shorts`}
               className={`border-b-2 px-1 py-3 text-sm font-medium ${
                 tab === "shorts"
-                  ? "border-gray-900 text-gray-900"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                  ? "border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100"
+                  : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
               }`}
             >
               Shorts
             </Link>
             <Link
+              href={`/channel/${id}?tab=playlists`}
+              className={`border-b-2 px-1 py-3 text-sm font-medium ${
+                tab === "playlists"
+                  ? "border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100"
+                  : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+              }`}
+            >
+              Playlists
+            </Link>
+            <Link
               href={`/channel/${id}?tab=community`}
               className={`border-b-2 px-1 py-3 text-sm font-medium ${
                 tab === "community"
-                  ? "border-gray-900 text-gray-900"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                  ? "border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100"
+                  : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
               }`}
             >
               Community
@@ -184,8 +216,8 @@ export default async function ChannelPage({
               href={`/channel/${id}?tab=about`}
               className={`border-b-2 px-1 py-3 text-sm font-medium ${
                 tab === "about"
-                  ? "border-gray-900 text-gray-900"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                  ? "border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100"
+                  : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
               }`}
             >
               About
@@ -199,9 +231,9 @@ export default async function ChannelPage({
             <>
               {videos.length === 0 ? (
                 <div className="py-12 text-center">
-                  <PlaySquare className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-                  <p className="text-lg font-medium">No videos yet</p>
-                  <p className="mt-1 text-gray-600">
+                  <PlaySquare className="mx-auto mb-4 h-12 w-12 text-gray-300 dark:text-gray-600" />
+                  <p className="text-lg font-medium dark:text-gray-100">No videos yet</p>
+                  <p className="mt-1 text-gray-600 dark:text-gray-400">
                     This channel hasn&apos;t uploaded any videos
                   </p>
                 </div>
@@ -223,7 +255,7 @@ export default async function ChannelPage({
                 .filter((v) => v.videoType === "SHORT")
                 .map((video) => (
                   <Link key={video.id} href={`/shorts?v=${video.id}`}>
-                    <div className="aspect-[9/16] overflow-hidden rounded-lg bg-gray-200">
+                    <div className="aspect-[9/16] overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
                       {video.thumbnailUrl ? (
                         <img
                           src={video.thumbnailUrl}
@@ -236,37 +268,92 @@ export default async function ChannelPage({
                         </div>
                       )}
                     </div>
-                    <p className="mt-2 line-clamp-2 text-sm font-medium">
+                    <p className="mt-2 line-clamp-2 text-sm font-medium dark:text-gray-100">
                       {video.title}
                     </p>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
                       {formatCount(video.viewCount)} views
                     </p>
                   </Link>
                 ))}
               {videos.filter((v) => v.videoType === "SHORT").length === 0 && (
                 <div className="col-span-full py-12 text-center">
-                  <p className="text-lg font-medium">No shorts yet</p>
+                  <p className="text-lg font-medium dark:text-gray-100">No shorts yet</p>
                 </div>
               )}
             </div>
+          )}
+
+          {tab === "playlists" && (
+            <>
+              {playlists.length === 0 ? (
+                <div className="py-12 text-center">
+                  <ListVideo className="mx-auto mb-4 h-12 w-12 text-gray-300 dark:text-gray-600" />
+                  <p className="text-lg font-medium dark:text-gray-100">No playlists yet</p>
+                  <p className="mt-1 text-gray-600 dark:text-gray-400">
+                    {isOwner
+                      ? "Create your first playlist to organize your videos"
+                      : `${channel.name} hasn't created any public playlists`}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {playlists.map((playlist) => (
+                    <Link
+                      key={playlist.id}
+                      href={`/playlist/${playlist.id}`}
+                      className="group"
+                    >
+                      <div className="relative aspect-video overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
+                        {playlist.videos[0]?.video.thumbnailUrl ? (
+                          <img
+                            src={playlist.videos[0].video.thumbnailUrl}
+                            alt={playlist.title}
+                            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center">
+                            <ListVideo className="h-12 w-12 text-gray-400" />
+                          </div>
+                        )}
+                        <div className="absolute bottom-0 right-0 flex items-center gap-1 rounded-tl bg-black/80 px-2 py-1 text-xs text-white">
+                          <ListVideo className="h-3 w-3" />
+                          {playlist.videoCount} videos
+                        </div>
+                      </div>
+                      <h3 className="mt-2 line-clamp-2 font-medium dark:text-gray-100 group-hover:text-blue-600">
+                        {playlist.title}
+                      </h3>
+                      {playlist.description && (
+                        <p className="mt-1 line-clamp-2 text-sm text-gray-600 dark:text-gray-400">
+                          {playlist.description}
+                        </p>
+                      )}
+                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        {playlist.visibility === "PUBLIC" ? "Public" : "Private"} playlist
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </>
           )}
 
           {tab === "community" && (
             <div className="mx-auto max-w-2xl space-y-4">
               {communityPosts.length === 0 ? (
                 <div className="py-12 text-center">
-                  <Users className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-                  <p className="text-lg font-medium">No community posts</p>
-                  <p className="mt-1 text-gray-600">
+                  <Users className="mx-auto mb-4 h-12 w-12 text-gray-300 dark:text-gray-600" />
+                  <p className="text-lg font-medium dark:text-gray-100">No community posts</p>
+                  <p className="mt-1 text-gray-600 dark:text-gray-400">
                     Community posts from {channel.name} will appear here
                   </p>
                 </div>
               ) : (
                 communityPosts.map((post) => (
-                  <div key={post.id} className="rounded-lg border p-4">
+                  <div key={post.id} className="rounded-lg border dark:border-gray-700 p-4">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-300">
+                      <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-300 dark:bg-gray-700">
                         {channel.avatar ? (
                           <img
                             src={channel.avatar}
@@ -274,21 +361,21 @@ export default async function ChannelPage({
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center font-medium">
+                          <div className="flex h-full w-full items-center justify-center font-medium dark:text-gray-400">
                             {channel.name[0]}
                           </div>
                         )}
                       </div>
                       <div>
-                        <p className="font-medium">{channel.name}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="font-medium dark:text-gray-100">{channel.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           {formatDistanceToNow(new Date(post.createdAt), {
                             addSuffix: true,
                           })}
                         </p>
                       </div>
                     </div>
-                    <p className="mt-3 whitespace-pre-wrap">{post.content}</p>
+                    <p className="mt-3 whitespace-pre-wrap dark:text-gray-200">{post.content}</p>
                     {post.mediaUrls && post.mediaUrls.length > 0 && (
                       <div className="mt-3 grid grid-cols-2 gap-2">
                         {post.mediaUrls.map((url, i) => (
@@ -309,13 +396,13 @@ export default async function ChannelPage({
 
           {tab === "about" && (
             <div className="mx-auto max-w-2xl">
-              <h2 className="text-lg font-medium">Description</h2>
-              <p className="mt-2 whitespace-pre-wrap text-gray-700">
+              <h2 className="text-lg font-medium dark:text-gray-100">Description</h2>
+              <p className="mt-2 whitespace-pre-wrap text-gray-700 dark:text-gray-300">
                 {channel.description || "No description"}
               </p>
 
-              <h2 className="mt-8 text-lg font-medium">Stats</h2>
-              <div className="mt-2 space-y-2 text-gray-600">
+              <h2 className="mt-8 text-lg font-medium dark:text-gray-100">Stats</h2>
+              <div className="mt-2 space-y-2 text-gray-600 dark:text-gray-400">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
                   Joined{" "}

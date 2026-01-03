@@ -49,10 +49,10 @@ export default async function AdminUsersPage({
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Users</h1>
-          <p className="text-gray-600">{total} total users</p>
+          <h1 className="text-2xl font-bold dark:text-white">Users</h1>
+          <p className="text-gray-600 dark:text-gray-400">{total} total users</p>
         </div>
-        <button className="flex items-center gap-2 rounded-lg border bg-white px-4 py-2 text-sm hover:bg-gray-50">
+        <button className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1f1f1f] px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-[#282828] dark:text-white transition-colors">
           <Download className="h-4 w-4" />
           Export
         </button>
@@ -68,13 +68,13 @@ export default async function AdminUsersPage({
               name="search"
               defaultValue={search}
               placeholder="Search users..."
-              className="w-full rounded-lg border bg-white py-2 pl-10 pr-4 text-sm focus:border-blue-600 focus:outline-none"
+              className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1f1f1f] py-2.5 pl-10 pr-4 text-sm focus:border-[#FF6B8A] focus:outline-none focus:ring-1 focus:ring-[#FF6B8A] dark:text-white dark:placeholder-gray-400"
             />
           </form>
         </div>
         <select
           defaultValue={status || ""}
-          className="rounded-lg border bg-white px-4 py-2 text-sm"
+          className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1f1f1f] px-4 py-2 text-sm dark:text-white"
         >
           <option value="">All statuses</option>
           <option value="ACTIVE">Active</option>
@@ -84,36 +84,36 @@ export default async function AdminUsersPage({
       </div>
 
       {/* Users Table */}
-      <div className="overflow-hidden rounded-lg border bg-white">
+      <div className="overflow-hidden rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#1f1f1f]">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 dark:bg-[#282828]">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 User
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 Role
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 Channels
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 Joined
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-4 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {users.map((user) => (
-              <tr key={user.id} className="hover:bg-gray-50">
+              <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-[#282828] transition-colors">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-200">
+                    <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                       {user.image ? (
                         <img
                           src={user.image}
@@ -121,33 +121,33 @@ export default async function AdminUsersPage({
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center font-medium text-gray-500">
+                        <div className="flex h-full w-full items-center justify-center font-medium text-gray-500 dark:text-gray-400">
                           {(user.name || user.email || "U")[0].toUpperCase()}
                         </div>
                       )}
                     </div>
                     <div>
-                      <p className="font-medium">{user.name || "No name"}</p>
-                      <p className="text-sm text-gray-500">{user.email}</p>
+                      <p className="font-medium dark:text-white">{user.name || "No name"}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4">
                   <span
-                    className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${
+                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
                       user.status === "ACTIVE"
-                        ? "bg-green-100 text-green-800"
+                        ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
                         : user.status === "SUSPENDED"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-red-100 text-red-800"
+                        ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+                        : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
                     }`}
                   >
                     {user.status}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm">{user.role}</td>
-                <td className="px-6 py-4 text-sm">{user._count.channels}</td>
-                <td className="px-6 py-4 text-sm text-gray-500">
+                <td className="px-6 py-4 text-sm dark:text-gray-300">{user.role}</td>
+                <td className="px-6 py-4 text-sm dark:text-gray-300">{user._count.channels}</td>
+                <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                   {formatDistanceToNow(new Date(user.createdAt), {
                     addSuffix: true,
                   })}
@@ -161,14 +161,14 @@ export default async function AdminUsersPage({
         </table>
 
         {users.length === 0 && (
-          <div className="py-12 text-center text-gray-500">No users found</div>
+          <div className="py-12 text-center text-gray-500 dark:text-gray-400">No users found</div>
         )}
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Showing {(pageNum - 1) * perPage + 1} to{" "}
             {Math.min(pageNum * perPage, total)} of {total} users
           </p>
@@ -176,7 +176,7 @@ export default async function AdminUsersPage({
             {pageNum > 1 && (
               <a
                 href={`/admin/users?page=${pageNum - 1}${search ? `&search=${search}` : ""}`}
-                className="rounded-lg border bg-white px-3 py-1.5 text-sm hover:bg-gray-50"
+                className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1f1f1f] px-3 py-1.5 text-sm dark:text-white hover:bg-gray-50 dark:hover:bg-[#282828] transition-colors"
               >
                 Previous
               </a>
@@ -184,7 +184,7 @@ export default async function AdminUsersPage({
             {pageNum < totalPages && (
               <a
                 href={`/admin/users?page=${pageNum + 1}${search ? `&search=${search}` : ""}`}
-                className="rounded-lg border bg-white px-3 py-1.5 text-sm hover:bg-gray-50"
+                className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1f1f1f] px-3 py-1.5 text-sm dark:text-white hover:bg-gray-50 dark:hover:bg-[#282828] transition-colors"
               >
                 Next
               </a>

@@ -36,11 +36,7 @@ export async function GET(
       return NextResponse.json({ error: "Video not found" }, { status: 404 })
     }
 
-    // Increment view count
-    await prisma.video.update({
-      where: { id: videoId },
-      data: { viewCount: { increment: 1 } },
-    })
+    // Note: View count is handled by dedicated /api/videos/[videoId]/view endpoint
 
     return NextResponse.json(video)
   } catch (error) {

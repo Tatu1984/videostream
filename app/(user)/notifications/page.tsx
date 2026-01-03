@@ -152,19 +152,19 @@ export default function NotificationsPage() {
   if (status === "loading" || loading) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 dark:border-gray-600 border-t-blue-600" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0f0f0f]">
       <div className="mx-auto max-w-3xl px-4 py-6">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Notifications</h1>
-            <p className="text-sm text-gray-600">
+            <h1 className="text-2xl font-bold dark:text-gray-100">Notifications</h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               {unreadCount > 0 ? `${unreadCount} unread` : "All caught up!"}
             </p>
           </div>
@@ -186,10 +186,10 @@ export default function NotificationsPage() {
 
         {/* Notifications List */}
         {notifications.length === 0 ? (
-          <div className="rounded-lg border bg-white py-12 text-center">
-            <Bell className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-            <h2 className="text-xl font-semibold">No notifications</h2>
-            <p className="mt-2 text-gray-600">
+          <div className="rounded-lg border dark:border-gray-700 bg-white dark:bg-[#1f1f1f] py-12 text-center">
+            <Bell className="mx-auto mb-4 h-12 w-12 text-gray-300 dark:text-gray-600" />
+            <h2 className="text-xl font-semibold dark:text-gray-100">No notifications</h2>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
               You&apos;ll see notifications for new videos, comments, and more here
             </p>
           </div>
@@ -198,8 +198,8 @@ export default function NotificationsPage() {
             {notifications.map((notification) => (
               <div
                 key={notification.id}
-                className={`group flex items-start gap-4 rounded-lg border bg-white p-4 transition-colors ${
-                  notification.read ? "" : "border-blue-200 bg-blue-50"
+                className={`group flex items-start gap-4 rounded-lg border bg-white dark:bg-[#1f1f1f] p-4 transition-colors ${
+                  notification.read ? "dark:border-gray-700" : "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20"
                 }`}
               >
                 {/* Icon */}
@@ -212,8 +212,8 @@ export default function NotificationsPage() {
                   className="flex-1 cursor-pointer"
                   onClick={() => handleClick(notification)}
                 >
-                  <p className="font-medium">{notification.title}</p>
-                  <p className="mt-1 text-sm text-gray-600">
+                  <p className="font-medium dark:text-gray-100">{notification.title}</p>
+                  <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                     {notification.message}
                   </p>
                   <p className="mt-2 text-xs text-gray-400">
@@ -228,15 +228,15 @@ export default function NotificationsPage() {
                   {!notification.read && (
                     <button
                       onClick={() => handleMarkAsRead(notification.id)}
-                      className="rounded p-2 hover:bg-gray-100"
+                      className="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                       title="Mark as read"
                     >
-                      <Check className="h-4 w-4" />
+                      <Check className="h-4 w-4 dark:text-gray-300" />
                     </button>
                   )}
                   <button
                     onClick={() => handleDelete(notification.id)}
-                    className="rounded p-2 text-red-600 hover:bg-gray-100"
+                    className="rounded p-2 text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
                     title="Delete"
                   >
                     <Trash2 className="h-4 w-4" />

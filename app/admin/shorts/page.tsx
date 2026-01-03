@@ -53,8 +53,8 @@ export default async function AdminShortsPage({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Shorts Management</h1>
-        <div className="text-sm text-gray-500">{total} total shorts</div>
+        <h1 className="text-2xl font-bold dark:text-white">Shorts Management</h1>
+        <div className="text-sm text-gray-500 dark:text-gray-400">{total} total shorts</div>
       </div>
 
       {/* Filters */}
@@ -99,7 +99,7 @@ export default async function AdminShortsPage({
         {shorts.map((short) => (
           <div
             key={short.id}
-            className="group relative aspect-[9/16] overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-800"
+            className="group relative aspect-[9/16] overflow-hidden rounded-xl bg-gray-200 dark:bg-[#282828]"
           >
             {short.thumbnailUrl ? (
               <img
@@ -108,7 +108,7 @@ export default async function AdminShortsPage({
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-gray-400">
+              <div className="flex h-full w-full items-center justify-center text-gray-400 dark:text-gray-500">
                 No thumbnail
               </div>
             )}
@@ -175,7 +175,7 @@ export default async function AdminShortsPage({
       </div>
 
       {shorts.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
           No shorts found
         </div>
       )}
@@ -183,7 +183,7 @@ export default async function AdminShortsPage({
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
             Showing {(page - 1) * perPage + 1} to {Math.min(page * perPage, total)} of {total}
           </div>
           <div className="flex gap-2">

@@ -3,17 +3,19 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Search, Upload, User, Menu, Video } from "lucide-react"
+import { Search, Upload, User, Menu, Video, Settings, Shield, LogOut } from "lucide-react"
 import { Button } from "@/components/shared/ui/button"
 import { Input } from "@/components/shared/ui/input"
 import { NotificationBell } from "@/components/user/notification-bell"
 import { ThemeToggle } from "@/components/shared/theme-toggle"
+import { signOut } from "next-auth/react"
 
 interface HeaderProps {
   user?: {
     id: string
     name?: string | null
     image?: string | null
+    role?: string
   } | null
 }
 
@@ -21,6 +23,7 @@ export function Header({ user }: HeaderProps) {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [showCreateMenu, setShowCreateMenu] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false)
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -101,8 +104,14 @@ export function Header({ user }: HeaderProps) {
               <ThemeToggle />
               <NotificationBell />
 
-              <Link href="/settings/account">
-                <Button variant="ghost" size="icon" className="rounded-full">
+              {/* User Menu */}
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full"
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                >
                   {user.image ? (
                     <img
                       src={user.image}
@@ -113,7 +122,66 @@ export function Header({ user }: HeaderProps) {
                     <User className="h-5 w-5" />
                   )}
                 </Button>
-              </Link>
+
+                {showUserMenu && (
+                  <div className="absolute right-0 top-full mt-2 w-56 rounded-lg border bg-white py-2 shadow-lg dark:border-gray-700 dark:bg-[#282828]">
+                    {/* User Info */}
+                    <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
+                      <p className="font-medium text-gray-900 dark:text-white">{user.name || "User"}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">@{user.name?.toLowerCase().replace(/\s/g, "") || "user"}</p>
+                    </div>
+
+                    {/* Admin Link - Only show for admins */}
+                    {user.role === "ADMIN" && (
+                      <>
+                        <Link
+                          href="/admin"
+                          onClick={() => setShowUserMenu(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-[#FF6B8A] hover:bg-pink-50 dark:hover:bg-pink-900/20"
+                        >
+                          <Shield className="h-4 w-4" />
+                          Admin Dashboard
+                        </Link>
+                        <div className="border-b border-gray-100 dark:border-gray-700 my-1" />
+                      </>
+                    )}
+
+                    {/* Creator Studio */}
+                    <Link
+                      href="/studio"
+                      onClick={() => setShowUserMenu(false)}
+                      className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <Video className="h-4 w-4" />
+                      Creator Studio
+                    </Link>
+
+                    {/* Settings */}
+                    <Link
+                      href="/settings/account"
+                      onClick={() => setShowUserMenu(false)}
+                      className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <Settings className="h-4 w-4" />
+                      Settings
+                    </Link>
+
+                    <div className="border-b border-gray-100 dark:border-gray-700 my-1" />
+
+                    {/* Sign Out */}
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false)
+                        signOut({ callbackUrl: "/" })
+                      }}
+                      className="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
             </>
           ) : (
             <Link href="/auth/signin">

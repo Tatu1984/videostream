@@ -33,6 +33,18 @@ export async function POST(req: NextRequest) {
     const channelId = formData.get("channelId") as string
     const visibility = (formData.get("visibility") as string) || "PRIVATE"
     const videoType = (formData.get("videoType") as string) || "STANDARD"
+    const tagsString = formData.get("tags") as string | null
+    const category = formData.get("category") as string | null
+
+    const scheduledForString = formData.get("scheduledFor") as string | null
+
+    // Parse tags from comma-separated string
+    const tags = tagsString
+      ? tagsString.split(",").map((tag) => tag.trim()).filter(Boolean)
+      : []
+
+    // Parse scheduled date
+    const scheduledFor = scheduledForString ? new Date(scheduledForString) : null
 
     if (!file) {
       return NextResponse.json({ error: "No video file provided" }, { status: 400 })
@@ -100,9 +112,13 @@ export async function POST(req: NextRequest) {
         title,
         description: description || null,
         channelId,
-        visibility: visibility as any,
+        visibility: scheduledFor ? "PRIVATE" : (visibility as any), // Keep private until scheduled publish
         videoType: videoType as any,
         processingStatus: "COMPLETED", // Since we're not transcoding
+        tags,
+        category: category || null,
+        scheduledFor,
+        publishedAt: scheduledFor ? null : new Date(), // Only set published if not scheduled
       },
     })
 

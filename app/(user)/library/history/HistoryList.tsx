@@ -71,8 +71,8 @@ export default function HistoryList({ initialHistory }: Props) {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Watch History</h1>
-          <p className="mt-1 text-gray-600">
+          <h1 className="text-3xl font-bold dark:text-gray-100">Watch History</h1>
+          <p className="mt-1 text-gray-600 dark:text-gray-400">
             {history.length} videos
           </p>
         </div>
@@ -88,9 +88,9 @@ export default function HistoryList({ initialHistory }: Props) {
           {history.map((item) => (
             <div
               key={item.id}
-              className="flex gap-4 rounded-lg border border-gray-200 bg-white p-4 hover:border-blue-300"
+              className="flex gap-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1f1f1f] p-4 hover:border-blue-300 dark:hover:border-blue-600"
             >
-              <Link href={`/watch/${item.video.id}`} className="relative aspect-video w-48 flex-shrink-0 overflow-hidden rounded-lg bg-gray-200">
+              <Link href={`/watch/${item.video.id}`} className="relative aspect-video w-48 flex-shrink-0 overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
                 {item.video.thumbnailUrl ? (
                   <img
                     src={item.video.thumbnailUrl}
@@ -106,14 +106,14 @@ export default function HistoryList({ initialHistory }: Props) {
 
               <div className="flex-1">
                 <Link href={`/watch/${item.video.id}`}>
-                  <h3 className="line-clamp-2 font-medium text-gray-900 hover:text-blue-600">
+                  <h3 className="line-clamp-2 font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600">
                     {item.video.title}
                   </h3>
                 </Link>
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                   {item.video.channel.name}
                 </p>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   Watched {new Date(item.watchedAt).toLocaleDateString()}
                 </p>
               </div>
@@ -130,12 +130,12 @@ export default function HistoryList({ initialHistory }: Props) {
           ))}
         </div>
       ) : (
-        <div className="flex h-64 items-center justify-center rounded-lg border border-gray-200 bg-white">
+        <div className="flex h-64 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1f1f1f]">
           <div className="text-center">
-            <p className="text-lg font-medium text-gray-900">
+            <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
               No watch history
             </p>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Videos you watch will appear here
             </p>
           </div>

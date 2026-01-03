@@ -36,21 +36,21 @@ export default async function TrendingPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Trending</h1>
-        <p className="mt-1 text-gray-600">
+        <h1 className="text-3xl font-bold dark:text-gray-100">Trending</h1>
+        <p className="mt-1 text-gray-600 dark:text-gray-400">
           See what's trending across MeTube
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="mb-6 flex gap-3 border-b border-gray-200 overflow-x-auto">
+      <div className="mb-6 flex gap-3 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
         {tabs.map((tab, index) => (
           <button
             key={tab}
             className={`flex-shrink-0 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
               index === 0
                 ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-600 hover:text-gray-900"
+                : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
             }`}
           >
             {tab}
@@ -68,10 +68,10 @@ export default async function TrendingPage() {
       ) : (
         <div className="flex h-64 items-center justify-center">
           <div className="text-center">
-            <p className="text-lg font-medium text-gray-900">
+            <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
               No trending videos yet
             </p>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Check back later
             </p>
           </div>

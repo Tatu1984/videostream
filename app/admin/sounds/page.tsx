@@ -52,9 +52,9 @@ export default async function AdminSoundsPage({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Sound Library</h1>
+        <h1 className="text-2xl font-bold dark:text-white">Sound Library</h1>
         <div className="flex items-center gap-4">
-          <div className="text-sm text-gray-500">{total} total sounds</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">{total} total sounds</div>
           <Link href="/admin/sounds/new">
             <Button size="sm">
               <Plus className="h-4 w-4 mr-2" />
@@ -102,23 +102,23 @@ export default async function AdminSoundsPage({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#1f1f1f]">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 dark:bg-gray-800">
+          <thead className="bg-gray-50 dark:bg-[#282828]">
             <tr>
-              <th className="px-4 py-3 text-left font-medium">Sound</th>
-              <th className="px-4 py-3 text-left font-medium">Artist</th>
-              <th className="px-4 py-3 text-left font-medium">Duration</th>
-              <th className="px-4 py-3 text-left font-medium">Usage</th>
-              <th className="px-4 py-3 text-left font-medium">Type</th>
-              <th className="px-4 py-3 text-left font-medium">Status</th>
-              <th className="px-4 py-3 text-left font-medium">Created</th>
-              <th className="px-4 py-3 text-left font-medium">Actions</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Sound</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Artist</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Duration</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Usage</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Type</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Status</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Created</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-400">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {sounds.map((sound) => (
-              <tr key={sound.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+              <tr key={sound.id} className="hover:bg-gray-50 dark:hover:bg-[#282828] transition-colors">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     <div className="h-12 w-12 flex-shrink-0 rounded-lg bg-gray-200 dark:bg-gray-700 overflow-hidden">
@@ -135,16 +135,16 @@ export default async function AdminSoundsPage({
                       )}
                     </div>
                     <div>
-                      <div className="font-medium">{sound.title}</div>
+                      <div className="font-medium dark:text-white">{sound.title}</div>
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-gray-500">{sound.artist || "Unknown"}</td>
-                <td className="px-4 py-3">{formatDuration(sound.duration)}</td>
-                <td className="px-4 py-3">{sound.usageCount.toLocaleString()} videos</td>
+                <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{sound.artist || "Unknown"}</td>
+                <td className="px-4 py-3 dark:text-gray-300">{formatDuration(sound.duration)}</td>
+                <td className="px-4 py-3 dark:text-gray-300">{sound.usageCount.toLocaleString()} videos</td>
                 <td className="px-4 py-3">
                   <span
-                    className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${
+                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
                       sound.isOriginal
                         ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
                         : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
@@ -155,16 +155,16 @@ export default async function AdminSoundsPage({
                 </td>
                 <td className="px-4 py-3">
                   <span
-                    className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${
+                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
                       sound.isActive
                         ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                        : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
+                        : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400"
                     }`}
                   >
                     {sound.isActive ? "Active" : "Inactive"}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-gray-500">
+                <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                   {new Date(sound.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-3">
@@ -193,18 +193,16 @@ export default async function AdminSoundsPage({
             ))}
           </tbody>
         </table>
-      </div>
 
-      {sounds.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
-          No sounds found
-        </div>
-      )}
+        {sounds.length === 0 && (
+          <div className="py-12 text-center text-gray-500 dark:text-gray-400">No sounds found</div>
+        )}
+      </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
             Showing {(page - 1) * perPage + 1} to {Math.min(page * perPage, total)} of {total}
           </div>
           <div className="flex gap-2">

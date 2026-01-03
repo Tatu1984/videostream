@@ -64,6 +64,33 @@ export default function PlaylistDetailClient({
   // Share state
   const [copied, setCopied] = useState(false)
 
+  // Remove video state
+  const [removingVideoId, setRemovingVideoId] = useState<string | null>(null)
+
+  const handleRemoveVideo = async (videoId: string) => {
+    setRemovingVideoId(videoId)
+    try {
+      const res = await fetch(`/api/playlists/${playlist.id}/videos?videoId=${videoId}`, {
+        method: "DELETE",
+      })
+
+      if (res.ok) {
+        setPlaylist({
+          ...playlist,
+          videos: playlist.videos.filter((v) => v.id !== videoId),
+          videoCount: playlist.videoCount - 1,
+        })
+      } else {
+        alert("Failed to remove video")
+      }
+    } catch (err) {
+      console.error("Failed to remove video:", err)
+      alert("Failed to remove video")
+    } finally {
+      setRemovingVideoId(null)
+    }
+  }
+
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this playlist? This cannot be undone.")) {
       return
@@ -191,7 +218,23 @@ export default function PlaylistDetailClient({
       {playlist.videos.length > 0 ? (
         <div className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {playlist.videos.map((video) => (
-            <VideoCard key={video.id} video={video} />
+            <div key={video.id} className="group relative">
+              <VideoCard video={video} />
+              {isOwner && (
+                <button
+                  onClick={() => handleRemoveVideo(video.id)}
+                  disabled={removingVideoId === video.id}
+                  className="absolute right-2 top-2 z-10 rounded-full bg-black/70 p-1.5 text-white opacity-0 transition-opacity hover:bg-black/90 group-hover:opacity-100 disabled:opacity-50"
+                  title="Remove from playlist"
+                >
+                  {removingVideoId === video.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <X className="h-4 w-4" />
+                  )}
+                </button>
+              )}
+            </div>
           ))}
         </div>
       ) : (

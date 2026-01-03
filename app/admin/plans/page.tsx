@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { Input } from "@/components/shared/ui/input"
 import { Button } from "@/components/shared/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/shared/ui/card"
 import { Plus, Edit2, Trash2, Star, Coins } from "lucide-react"
 
 interface CoinPlan {
@@ -79,7 +78,7 @@ export default function AdminPlansPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Coin Plans</h1>
+        <h1 className="text-2xl font-bold dark:text-white">Coin Plans</h1>
         <Button onClick={() => setShowModal(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add Plan
@@ -88,45 +87,33 @@ export default function AdminPlansPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Total Plans</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{plans.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Active Plans</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{plans.filter((p) => p.isActive).length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Total Purchases</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {plans.reduce((acc, p) => acc + (p._count?.purchases || 0), 0)}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#1f1f1f] p-6">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Plans</p>
+          <p className="text-2xl font-bold dark:text-white mt-1">{plans.length}</p>
+        </div>
+        <div className="rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#1f1f1f] p-6">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Active Plans</p>
+          <p className="text-2xl font-bold dark:text-white mt-1">{plans.filter((p) => p.isActive).length}</p>
+        </div>
+        <div className="rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#1f1f1f] p-6">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Purchases</p>
+          <p className="text-2xl font-bold dark:text-white mt-1">
+            {plans.reduce((acc, p) => acc + (p._count?.purchases || 0), 0)}
+          </p>
+        </div>
       </div>
 
       {/* Plans Grid */}
       {loading ? (
-        <div className="text-center py-12 text-gray-500">Loading...</div>
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">Loading...</div>
       ) : plans.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">No plans found</div>
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">No plans found</div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {plans.map((plan) => (
-            <Card
+            <div
               key={plan.id}
-              className={`relative ${!plan.isActive ? "opacity-60" : ""} ${
+              className={`relative rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#1f1f1f] p-6 ${!plan.isActive ? "opacity-60" : ""} ${
                 plan.isPopular ? "ring-2 ring-yellow-400" : ""
               }`}
             >
@@ -136,44 +123,44 @@ export default function AdminPlansPage() {
                   Popular
                 </div>
               )}
-              <CardHeader className="pb-2">
+              <div className="pb-2">
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-lg">{plan.name}</CardTitle>
+                    <h3 className="text-lg font-semibold dark:text-white">{plan.name}</h3>
                     {plan.description && (
-                      <p className="text-sm text-gray-500 mt-1">{plan.description}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{plan.description}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-1">
                     <Coins className="h-5 w-5 text-yellow-500" />
-                    <span className="text-xl font-bold">{plan.coins}</span>
+                    <span className="text-xl font-bold dark:text-white">{plan.coins}</span>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
+              </div>
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-2xl font-bold">${plan.price.toFixed(2)}</p>
+                    <p className="text-2xl font-bold dark:text-white">${plan.price.toFixed(2)}</p>
                     {plan.bonusCoins > 0 && (
-                      <p className="text-sm text-green-600">+{plan.bonusCoins} bonus coins</p>
+                      <p className="text-sm text-green-600 dark:text-green-400">+{plan.bonusCoins} bonus coins</p>
                     )}
                   </div>
                   <span
-                    className={`text-xs px-2 py-1 rounded-full ${
+                    className={`text-xs px-2.5 py-1 rounded-full ${
                       plan.isActive
                         ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                        : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                        : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
                     }`}
                   >
                     {plan.isActive ? "Active" : "Inactive"}
                   </span>
                 </div>
 
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
                   {plan._count?.purchases || 0} purchases
                 </div>
 
-                <div className="flex items-center gap-2 pt-2 border-t dark:border-gray-700">
+                <div className="flex items-center gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -210,8 +197,8 @@ export default function AdminPlansPage() {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       )}
@@ -275,11 +262,11 @@ function PlanModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-lg rounded-lg bg-white dark:bg-gray-900 p-6 shadow-xl">
-        <h2 className="text-xl font-bold mb-4">{plan ? "Edit Plan" : "Add Plan"}</h2>
+      <div className="w-full max-w-lg rounded-xl bg-white dark:bg-[#1f1f1f] p-6 shadow-xl">
+        <h2 className="text-xl font-bold mb-4 dark:text-white">{plan ? "Edit Plan" : "Add Plan"}</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-300">Name</label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -288,7 +275,7 @@ function PlanModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Description</label>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-300">Description</label>
             <Input
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -297,7 +284,7 @@ function PlanModal({
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Coins</label>
+              <label className="block text-sm font-medium mb-1 dark:text-gray-300">Coins</label>
               <Input
                 type="number"
                 value={coins}
@@ -307,7 +294,7 @@ function PlanModal({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Bonus Coins</label>
+              <label className="block text-sm font-medium mb-1 dark:text-gray-300">Bonus Coins</label>
               <Input
                 type="number"
                 value={bonusCoins}
@@ -317,7 +304,7 @@ function PlanModal({
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Price ($)</label>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-300">Price ($)</label>
             <Input
               type="number"
               value={price}

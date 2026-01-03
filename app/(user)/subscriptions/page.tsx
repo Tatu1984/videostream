@@ -43,8 +43,8 @@ export default async function SubscriptionsPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Subscriptions</h1>
-        <p className="mt-1 text-gray-600">
+        <h1 className="text-3xl font-bold dark:text-gray-100">Subscriptions</h1>
+        <p className="mt-1 text-gray-600 dark:text-gray-400">
           Latest from your subscribed channels
         </p>
       </div>
@@ -58,7 +58,7 @@ export default async function SubscriptionsPage() {
                 key={sub.id}
                 className="flex-shrink-0 text-center"
               >
-                <div className="h-16 w-16 overflow-hidden rounded-full bg-gray-300">
+                <div className="h-16 w-16 overflow-hidden rounded-full bg-gray-300 dark:bg-gray-700">
                   {sub.channel.avatar ? (
                     <img
                       src={sub.channel.avatar}
@@ -66,12 +66,12 @@ export default async function SubscriptionsPage() {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-xl font-medium text-gray-600">
+                    <div className="flex h-full w-full items-center justify-center text-xl font-medium text-gray-600 dark:text-gray-400">
                       {sub.channel.name[0]}
                     </div>
                   )}
                 </div>
-                <p className="mt-2 text-xs font-medium text-gray-900">
+                <p className="mt-2 text-xs font-medium text-gray-900 dark:text-gray-100">
                   {sub.channel.name}
                 </p>
               </div>
@@ -88,12 +88,12 @@ export default async function SubscriptionsPage() {
           ))}
         </div>
       ) : (
-        <div className="flex h-64 items-center justify-center rounded-lg border border-gray-200 bg-white">
+        <div className="flex h-64 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1f1f1f]">
           <div className="text-center">
-            <p className="text-lg font-medium text-gray-900">
+            <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
               No subscriptions yet
             </p>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Subscribe to channels to see their latest videos here
             </p>
           </div>
