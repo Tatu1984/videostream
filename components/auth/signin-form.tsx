@@ -17,14 +17,12 @@ const signinSchema = z.object({
 
 type SigninFormData = z.infer<typeof signinSchema>
 
-// Demo accounts are only shown in development environment
-const isDevelopment = process.env.NODE_ENV === "development"
-
-const demoAccounts = isDevelopment ? [
+// Demo accounts for testing
+const demoAccounts = [
   { role: "Super Admin", email: "admin@metube.com", password: "admin123", color: "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800", redirect: "/admin" },
   { role: "Creator", email: "creator@metube.com", password: "creator123", color: "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800", redirect: "/studio" },
   { role: "User", email: "user@metube.com", password: "user123", color: "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800", redirect: "/" },
-] : []
+]
 
 export function SigninForm() {
   const router = useRouter()
